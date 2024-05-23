@@ -3,9 +3,10 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { RestaurantsModule } from "./restaurants/restaurants.module";
 import * as Joi from "joi";
-import { Restaurant } from "./restaurants/entities/restaurants.entity";
+import { UsersModule } from "./users/users.module";
+import { CommonModule } from "./common/common.module";
+import { User } from "./users/entities/user.entity";
 
 @Module({
   imports: [
@@ -31,13 +32,14 @@ import { Restaurant } from "./restaurants/entities/restaurants.entity";
       database: process.env.DB_DATABASE,
       synchronize: process.env.NODE_ENV !== "prod",
       logging: process.env.NODE_ENV !== "prod",
-      entities: [Restaurant],
+      entities: [User],
     }),
-    RestaurantsModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
     }),
+    UsersModule,
+    CommonModule,
   ],
 })
 export class AppModule {}
