@@ -1,5 +1,10 @@
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { Module } from "@nestjs/common";
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -8,6 +13,7 @@ import { CommonModule } from "./common/common.module";
 import { JwtModule } from "./jwt/jwt.module";
 import { User } from "./users/entities/user.entity";
 import { UsersModule } from "./users/users.module";
+import { JwtMiddleware } from "./jwt/jwt.middleware";
 
 @Module({
   imports: [
