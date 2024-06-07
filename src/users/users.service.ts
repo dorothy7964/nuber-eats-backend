@@ -14,9 +14,7 @@ export class UsersService {
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly config: ConfigService,
     private readonly jwtService: JwtService,
-  ) {
-    this.jwtService.testJwt();
-  }
+  ) {}
 
   async createAccount({
     email,
@@ -56,7 +54,7 @@ export class UsersService {
           error: "Wrong password",
         };
       }
-      const token = jwt.sign({ id: user.id }, this.config.get("SECRET_KEY"));
+      const token = jwt.sign({ id: user.id }, this.config.get("PRIVATE_KEY"));
       return {
         ok: true,
         token,
