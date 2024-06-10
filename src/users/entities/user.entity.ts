@@ -1,5 +1,10 @@
 import { InternalServerErrorException } from "@nestjs/common";
-import { Field, InputType, registerEnumType } from "@nestjs/graphql";
+import {
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from "@nestjs/graphql";
 import * as bcrypt from "bcrypt";
 import { IsEnum, IsString } from "class-validator";
 import { CoreEntity } from "src/common/entities/core.entity";
@@ -14,6 +19,7 @@ enum UserRole {
 registerEnumType(UserRole, { name: "UserRole" });
 
 @InputType({ isAbstract: true })
+@ObjectType()
 @Entity()
 export class User extends CoreEntity {
   @Column()
