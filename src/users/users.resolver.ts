@@ -6,13 +6,15 @@ import {
 import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
+import { UseGuards } from "@nestjs/common";
+import { AuthGuard } from "src/auth/auth.guard";
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
   @Query(() => User)
+  @UseGuards(AuthGuard)
   me(@Context() context) {
-    console.log("📢 [users.resolver.ts:24] context - ", context);
     if (!context.user) {
       return;
     }
