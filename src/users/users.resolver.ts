@@ -9,6 +9,7 @@ import { UsersService } from "./users.service";
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from "src/auth/auth.guard";
 import { AuthUser } from "src/auth/auth-user.decorator";
+import { UserProfileInput, UserProfileOutput } from "./dtos/user-profile.dto";
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -17,6 +18,28 @@ export class UsersResolver {
   @UseGuards(AuthGuard)
   me(@AuthUser() authUser: User) {
     return authUser;
+  }
+  @Query(() => UserProfileOutput)
+  @UseGuards(AuthGuard)
+  async userProfile(
+    @Args() userProfileInput: UserProfileInput,
+  ): Promise<UserProfileOutput> {
+    try {
+      const user = await this.usersService.findById(userProfileInput.userId);
+      if (!user) {
+        // 유저가 없다면 catch 문으로 보내기
+        throw Error();
+      }
+      return {
+        ok: true,
+        user,
+      };
+    } catch (e) {
+      return {
+        ok: false,
+        error: "User Not Found",
+      };
+    }
   }
 
   @Mutation(() => CreateAccountOutput)
