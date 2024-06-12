@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { CreateAccountInput } from "./dtos/create-account.dto";
 import { LoginInput } from "./dtos/login.dto";
 import { User } from "./entities/user.entity";
+import { EditProfileInput } from "./dtos/edit-profile.dto";
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,20 @@ export class UsersService {
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async editProfile(
+    userId: number,
+    { email, password }: EditProfileInput,
+  ): Promise<User> {
+    const user = await this.users.findOne({ where: { id: userId } });
+    if (email) {
+      user.email = email;
+    }
+    if (password) {
+      user.password = password;
+    }
+    return this.users.save(user);
+  }
 
   async createAccount({
     email,
