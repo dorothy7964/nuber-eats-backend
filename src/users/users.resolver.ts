@@ -27,22 +27,7 @@ export class UsersResolver {
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
-    try {
-      const user = await this.usersService.findById(userProfileInput.userId);
-      if (!user) {
-        // 유저가 없다면 catch 문으로 보내기
-        throw Error();
-      }
-      return {
-        ok: true,
-        user,
-      };
-    } catch (e) {
-      return {
-        ok: false,
-        error: "User Not Found",
-      };
-    }
+    return this.usersService.findById(userProfileInput.userId);
   }
 
   @Mutation(() => EditProfileOutput)
@@ -51,59 +36,23 @@ export class UsersResolver {
     @AuthUser() authUser: User,
     @Args("input") editProfileInput: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    try {
-      await this.usersService.editProfile(authUser.id, editProfileInput);
-      return {
-        ok: true,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+    return this.usersService.editProfile(authUser.id, editProfileInput);
   }
 
   @Mutation(() => CreateAccountOutput)
   async createAccount(
     @Args("input") createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
-    try {
-      return this.usersService.createAccount(createAccountInput);
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+    return this.usersService.createAccount(createAccountInput);
   }
 
   @Mutation(() => LoginOutput)
   async login(@Args("input") loginInput: LoginInput): Promise<LoginOutput> {
-    try {
-      return this.usersService.login(loginInput);
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+    return this.usersService.login(loginInput);
   }
 
   @Mutation(() => VerifyEmailOutput)
-  async verifyEmail(
-    @Args("input") { code }: VerifyEmailInput,
-  ): Promise<VerifyEmailOutput> {
-    try {
-      await this.usersService.verifyEmail(code);
-      return {
-        ok: true,
-      };
-    } catch (error) {
-      return {
-        ok: false,
-        error,
-      };
-    }
+  verifyEmail(@Args("input") { code }: VerifyEmailInput) {
+    return this.usersService.verifyEmail(code);
   }
 }
