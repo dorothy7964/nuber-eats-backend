@@ -88,4 +88,16 @@ export class UsersService {
   async findById(id: number): Promise<User> {
     return this.users.findOne({ where: { id } });
   }
+
+  async verifyEmail(code: string): Promise<boolean> {
+    const verification = await this.verification.findOne({
+      where: { code },
+      relations: ["user"],
+    });
+    if (verification) {
+      verification.user.verified = true;
+      this.users.save(verification.user);
+    }
+    return false;
+  }
 }
