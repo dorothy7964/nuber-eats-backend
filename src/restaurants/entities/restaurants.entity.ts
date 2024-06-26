@@ -1,11 +1,5 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-  Length,
-  length,
-} from "class-validator";
+import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @InputType({ isAbstract: true })
