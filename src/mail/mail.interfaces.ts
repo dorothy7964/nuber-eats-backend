@@ -4,3 +4,8 @@ export interface MailModuleOptions {
   fromEmail: string;
   toEmail: string; // 메일건에서 무료계정 사용으로 받는사람이 한정되어 있음
 }
+
+export interface EmailVar {
+  key: string;
+  value: string;
+}

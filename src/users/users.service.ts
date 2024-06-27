@@ -9,6 +9,7 @@ import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 import { Verification } from "./entities/verification.entity";
 import { UserProfileOutput } from "./dtos/user-profile.dto";
 import { VerifyEmailOutput } from "./dtos/verify-email.dto";
+import { MailService } from "src/mail/mail.service";
 
 @Injectable()
 export class UsersService {
@@ -17,6 +18,7 @@ export class UsersService {
     @InjectRepository(Verification)
     private readonly verification: Repository<Verification>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async editProfile(
@@ -29,7 +31,12 @@ export class UsersService {
         user.email = email;
         user.verified = false;
         await this.verification.delete({ user: { id: user.id } });
-        await this.verification.save(this.verification.create({ user }));
+        const verification = await this.verification.save(
+          this.verification.create({ user }),
+        );
+
+        // 이메일 보내기, 인증 코드 전송
+        this.mailService.sendVerificationEmail(user.email, verification.code);
       }
       if (password) {
         user.password = password;
@@ -54,12 +61,16 @@ export class UsersService {
       if (exists) {
         return { ok: false, error: "There is a user with that email already" };
       }
-      /* 작성한 이메일이 존재하지 않는다면 작성한 계정 저장하기 */
+      // 작성한 이메일이 존재하지 않는다면 작성한 계정 저장하기
       const user = await this.users.save(
         this.users.create({ email, password, role }),
       );
+      const verification = await this.verification.save(
+        this.verification.create({ user }),
+      );
 
-      await this.verification.save(this.verification.create({ user }));
+      // 이메일 보내기, 인증 코드 전송
+      this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (e) {
       return { ok: false, error: "Couldn`t create account" };
