@@ -12,7 +12,7 @@ import * as Joi from "joi";
 import { JwtMiddleware } from "./jwt/jwt.middleware";
 import { JwtModule } from "./jwt/jwt.module";
 import { User } from "./users/entities/user.entity";
-import { UsersModule } from "./users/users.module";
+import { UserModule } from "./users/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { Verification } from "./users/entities/verification.entity";
 import { MailModule } from "./mail/mail.module";
@@ -62,7 +62,7 @@ import { MailModule } from "./mail/mail.module";
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
       toEmail: process.env.MAILGUN_TO_EMAIL,
     }),
-    UsersModule,
+    UserModule,
     AuthModule,
   ],
 })

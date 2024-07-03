@@ -11,11 +11,11 @@ import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { UserProfileInput, UserProfileOutput } from "./dtos/user-profile.dto";
 import { VerifyEmailInput, VerifyEmailOutput } from "./dtos/verify-email.dto";
 import { User } from "./entities/user.entity";
-import { UsersService } from "./users.service";
+import { UserService } from "./user.service";
 
 @Resolver(() => User)
-export class UsersResolver {
-  constructor(private readonly usersService: UsersService) {}
+export class UserResolver {
+  constructor(private readonly UserService: UserService) {}
   @Query(() => User)
   @UseGuards(AuthGuard)
   me(@AuthUser() authUser: User) {
@@ -27,7 +27,7 @@ export class UsersResolver {
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
-    return this.usersService.findById(userProfileInput.userId);
+    return this.UserService.findById(userProfileInput.userId);
   }
 
   @Mutation(() => EditProfileOutput)
@@ -36,23 +36,23 @@ export class UsersResolver {
     @AuthUser() authUser: User,
     @Args("input") editProfileInput: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    return this.usersService.editProfile(authUser.id, editProfileInput);
+    return this.UserService.editProfile(authUser.id, editProfileInput);
   }
 
   @Mutation(() => CreateAccountOutput)
   async createAccount(
     @Args("input") createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
-    return this.usersService.createAccount(createAccountInput);
+    return this.UserService.createAccount(createAccountInput);
   }
 
   @Mutation(() => LoginOutput)
   async login(@Args("input") loginInput: LoginInput): Promise<LoginOutput> {
-    return this.usersService.login(loginInput);
+    return this.UserService.login(loginInput);
   }
 
   @Mutation(() => VerifyEmailOutput)
   verifyEmail(@Args("input") { code }: VerifyEmailInput) {
-    return this.usersService.verifyEmail(code);
+    return this.UserService.verifyEmail(code);
   }
 }
