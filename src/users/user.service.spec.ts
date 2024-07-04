@@ -64,23 +64,24 @@ describe("UserService", () => {
     expect(service).toBeDefined();
   });
 
-  it("should fail if user exists", async () => {
-    userRepository.findOne.mockResolvedValue({
-      id: 1,
-      email: "test@mail.com",
-    });
-    const result = await service.createAccount({
-      email: "",
-      password: "",
-      role: 0,
-    });
-    expect(result).toMatchObject({
-      ok: false,
-      error: "There is a user with that email already",
+  describe("createAccount", () => {
+    it("should fail if user exists", async () => {
+      userRepository.findOne.mockResolvedValue({
+        id: 1,
+        email: "test@mail.com",
+      });
+      const result = service.createAccount({
+        email: "",
+        password: "",
+        role: 0,
+      });
+      expect(result).toMatchObject({
+        ok: false,
+        error: "There is a user with that email already",
+      });
     });
   });
 
-  it.todo("createAccount");
   it.todo("login");
   it.todo("findById");
   it.todo("verifyEmail");
