@@ -74,6 +74,7 @@ describe("UserService", () => {
       password: "123",
       role: 0,
     };
+
     it("should fail if user exists", async () => {
       userRepository.findOne.mockResolvedValue({
         id: 1,
@@ -85,6 +86,7 @@ describe("UserService", () => {
         error: "There is a user with that email already",
       });
     });
+
     it("should create a new user", async () => {
       userRepository.findOne.mockResolvedValue(undefined);
       userRepository.create.mockReturnValue(createAccountArgs);
@@ -121,9 +123,38 @@ describe("UserService", () => {
       );
       expect(result).toEqual({ ok: true });
     });
+
+    it("should fail on exception", async () => {
+      userRepository.findOne.mockRejectedValue(new Error());
+      const result = await service.createAccount(createAccountArgs);
+      expect(result).toEqual({ ok: false, error: "Couldn`t create account" });
+    });
   });
 
-  it.todo("login");
+  describe("login", () => {
+    const loginArgs = {
+      email: "loginTest@email.com",
+      password: "password",
+    };
+
+    it("should fail if user does not exist", async () => {
+      // findOne의 리턴 값을 false로 mock 하기
+      userRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.login(loginArgs);
+
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(userRepository.findOne).toHaveBeenCalledWith(
+        expect.any(Object),
+        expect.any(Object),
+      );
+      expect(result).toEqual({
+        ok: false,
+        error: "User not found",
+      });
+    });
+  });
+
   it.todo("findById");
   it.todo("verifyEmail");
 });
