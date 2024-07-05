@@ -103,7 +103,7 @@ export class UserService {
         token,
       };
     } catch (error) {
-      return { ok: false, error };
+      return { ok: false, error: "Can't log user in." };
     }
   }
 
