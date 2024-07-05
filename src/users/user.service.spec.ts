@@ -32,7 +32,7 @@ describe("UserService", () => {
   let verificationRepository: MockRepository<Verification>;
   let mailService: MailService;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         UserService,
@@ -144,10 +144,7 @@ describe("UserService", () => {
       const result = await service.login(loginArgs);
 
       expect(userRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(userRepository.findOne).toHaveBeenCalledWith(
-        expect.any(Object),
-        expect.any(Object),
-      );
+      expect(userRepository.findOne).toHaveBeenCalledWith(expect.any(Object));
       expect(result).toEqual({
         ok: false,
         error: "User not found",
