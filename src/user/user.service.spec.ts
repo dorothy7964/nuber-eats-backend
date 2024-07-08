@@ -10,18 +10,19 @@ import { Repository } from "typeorm";
 const mockRepository = () => ({
   create: jest.fn(),
   save: jest.fn(),
+  delete: jest.fn(),
   findOne: jest.fn(),
   findOneOrFail: jest.fn(),
 });
 
-const mockJwtService = {
+const mockJwtService = () => ({
   sign: jest.fn(() => "signed-token"),
   verify: jest.fn(),
-};
+});
 
-const mockMailService = {
+const mockMailService = () => ({
   sendVerificationEmail: jest.fn(),
-};
+});
 
 type MockRepository<T = any> = Partial<
   Record<keyof Repository<User>, jest.Mock>
@@ -51,19 +52,18 @@ describe("UserService", () => {
         {
           // JwtService
           provide: JwtService,
-          useValue: mockJwtService,
+          useValue: mockJwtService(),
         },
         {
           // mailService
           provide: MailService,
-          useValue: mockMailService,
+          useValue: mockMailService(),
         },
       ],
     }).compile();
     service = module.get<UserService>(UserService);
     mailService = module.get<MailService>(MailService);
     jwtService = module.get<JwtService>(JwtService);
-
     userRepository = module.get(getRepositoryToken(User));
     verificationRepository = module.get(getRepositoryToken(Verification));
   });
@@ -197,6 +197,62 @@ describe("UserService", () => {
       userRepository.findOneOrFail.mockRejectedValue(new Error());
       const result = await service.findById(findByIdArgs.id);
       expect(result).toEqual({ ok: false, error: "User Not Found" });
+    });
+  });
+
+  describe("editProfile", () => {
+    it("should change email", async () => {
+      const newEmail = "wow@new.com";
+
+      const user = {
+        id: 1,
+        email: "wow@old.com",
+        verified: true,
+      };
+
+      const newUser = {
+        ...user,
+        email: newEmail,
+        verified: false,
+      };
+
+      const newVerification = {
+        user: newUser,
+        code: "verification-code",
+      };
+
+      userRepository.findOne.mockResolvedValue(user);
+      // TypeORM에서는 삭제된 레코드의 수를 나타내는 객체를 반환한다.
+      // 예를 들어, { affected: 1 }는 하나의 레코드가 삭제되었음을 의미한다.
+      verificationRepository.delete.mockResolvedValue({ affected: 1 });
+      verificationRepository.create.mockReturnValue(newVerification);
+      verificationRepository.save.mockResolvedValue(newVerification);
+
+      await service.editProfile(user.id, { email: newEmail });
+
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { id: user.id },
+      });
+
+      expect(verificationRepository.delete).toHaveBeenCalledTimes(1);
+      expect(verificationRepository.delete).toHaveBeenCalledWith({
+        user: { id: user.id },
+      });
+
+      // verificationRepository.create은 object과 함께 콜해야 한다.
+      // object는 newUser고, newVerrification이 리턴된다.
+      expect(verificationRepository.create).toHaveBeenCalledWith({
+        user: newUser,
+      });
+      // verificationRepository.save는 newVerification과 콜이 되어야 한다.
+      expect(verificationRepository.save).toHaveBeenCalledWith(newVerification);
+
+      expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
+      expect(mailService.sendVerificationEmail).toHaveBeenCalledWith(
+        newUser.email,
+        newVerification.code,
+      );
     });
   });
 
