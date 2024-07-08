@@ -14,7 +14,7 @@ import { MailService } from "src/mail/mail.service";
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(User) private readonly user: Repository<User>,
     @InjectRepository(Verification)
     private readonly verification: Repository<Verification>,
     private readonly jwtService: JwtService,
@@ -25,7 +25,7 @@ export class UserService {
     userId: number,
     { email, password }: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    const user = await this.users.findOne({ where: { id: userId } });
+    const user = await this.user.findOne({ where: { id: userId } });
     try {
       if (email) {
         user.email = email;
@@ -41,7 +41,7 @@ export class UserService {
       if (password) {
         user.password = password;
       }
-      await this.users.save(user);
+      await this.user.save(user);
 
       return {
         ok: true,
@@ -57,13 +57,13 @@ export class UserService {
     role,
   }: CreateAccountInput): Promise<UserProfileOutput> {
     try {
-      const exists = await this.users.findOne({ where: { email } });
+      const exists = await this.user.findOne({ where: { email } });
       if (exists) {
         return { ok: false, error: "There is a user with that email already" };
       }
       // 작성한 이메일이 존재하지 않는다면 작성한 계정 저장하기
-      const user = await this.users.save(
-        this.users.create({ email, password, role }),
+      const user = await this.user.save(
+        this.user.create({ email, password, role }),
       );
       const verification = await this.verification.save(
         this.verification.create({ user }),
@@ -79,7 +79,7 @@ export class UserService {
 
   async login({ email, password }: LoginInput): Promise<LoginOutput> {
     try {
-      const user = await this.users.findOne({
+      const user = await this.user.findOne({
         where: { email },
         select: ["id", "password"],
       });
@@ -109,13 +109,11 @@ export class UserService {
 
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOne({ where: { id } });
-      if (user) {
-        return {
-          ok: true,
-          user,
-        };
-      }
+      const user = await this.user.findOneOrFail({ where: { id } });
+      return {
+        ok: true,
+        user,
+      };
     } catch (error) {
       return { ok: false, error: "User Not Found" };
     }
@@ -129,7 +127,7 @@ export class UserService {
       });
       if (verification) {
         verification.user.verified = true;
-        await this.users.save(verification.user);
+        await this.user.save(verification.user);
         await this.verification.delete(verification.id);
         return { ok: true };
       }
