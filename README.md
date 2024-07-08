@@ -16,6 +16,57 @@ http://localhost:3000/graphql
 
 <br/><br/>
 
+# 프로젝트 구조
+
+```javascript
+src/
+├── auth/
+│   ├── auth-user.decorator.ts
+│   ├── auth.guard.ts
+│   └── auth.module.ts
+├── common/
+│   ├── dtos/
+│   │   ├── output.dto.ts
+│   ├── entities/
+│   │   ├── core.entity.ts
+│   ├── common.module.ts
+├── jwt/
+│   ├── jwt.interfaces.ts
+│   └── jwt.middleware.ts
+│   ├── jwt.module.ts
+│   └── jwt.service.ts
+├── mail/
+│   ├── mail.interfaces.ts
+│   ├── mail.module.ts
+│   └── mail.service.ts
+├── restaurant/
+│   ├── dtos/
+│   │   ├── create-restaurant.dto.ts
+│   │   ├── update-restaurant.dto.ts
+│   ├── entities/
+│   │   ├── restaurant.entity.ts
+│   ├── restaurant.module.ts
+│   ├── restaurant.resolver.ts
+│   └── restaurant.service.ts
+├── user/
+│   ├── dtos/
+│   │   ├── create-account.dto.ts
+│   │   ├── edit-profile.dto.ts
+│   │   ├── login.dto.ts
+│   │   ├── user-profile.dto.ts
+│   │   ├── verify-email.dto.ts
+│   ├── entities/
+│   │   ├── user.entity.ts
+│   │   ├── verification.entity.ts
+│   ├── user.module.ts
+│   ├── user.resolver.ts
+│   └── user.service.ts
+├── app.module.ts
+└── main.ts
+```
+
+<br/><br/>
+
 # User Entity
 
 - id

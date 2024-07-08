@@ -11,10 +11,10 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import * as Joi from "joi";
 import { JwtMiddleware } from "./jwt/jwt.middleware";
 import { JwtModule } from "./jwt/jwt.module";
-import { User } from "./users/entities/user.entity";
-import { UserModule } from "./users/user.module";
+import { User } from "./user/entities/user.entity";
+import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
-import { Verification } from "./users/entities/verification.entity";
+import { Verification } from "./user/entities/verification.entity";
 import { MailModule } from "./mail/mail.module";
 
 @Module({
