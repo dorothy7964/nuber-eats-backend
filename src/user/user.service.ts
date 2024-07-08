@@ -25,8 +25,8 @@ export class UserService {
     userId: number,
     { email, password }: EditProfileInput,
   ): Promise<EditProfileOutput> {
-    const user = await this.user.findOne({ where: { id: userId } });
     try {
+      const user = await this.user.findOne({ where: { id: userId } });
       if (email) {
         user.email = email;
         user.verified = false;

@@ -202,10 +202,11 @@ describe("UserService", () => {
 
   describe("editProfile", () => {
     it("should change email", async () => {
+      const userId = 1;
       const newEmail = "wow@new.com";
 
       const user = {
-        id: 1,
+        id: userId,
         email: "wow@old.com",
         verified: true,
       };
@@ -220,32 +221,26 @@ describe("UserService", () => {
         user: newUser,
         code: "verification-code",
       };
-
       userRepository.findOne.mockResolvedValue(user);
-      // TypeORM에서는 삭제된 레코드의 수를 나타내는 객체를 반환한다.
-      // 예를 들어, { affected: 1 }는 하나의 레코드가 삭제되었음을 의미한다.
       verificationRepository.delete.mockResolvedValue({ affected: 1 });
       verificationRepository.create.mockReturnValue(newVerification);
       verificationRepository.save.mockResolvedValue(newVerification);
 
-      await service.editProfile(user.id, { email: newEmail });
+      await service.editProfile(userId, { email: newEmail });
 
       expect(userRepository.findOne).toHaveBeenCalledTimes(1);
       expect(userRepository.findOne).toHaveBeenCalledWith({
-        where: { id: user.id },
+        where: { id: userId },
       });
 
       expect(verificationRepository.delete).toHaveBeenCalledTimes(1);
       expect(verificationRepository.delete).toHaveBeenCalledWith({
-        user: { id: user.id },
+        user: { id: userId },
       });
 
-      // verificationRepository.create은 object과 함께 콜해야 한다.
-      // object는 newUser고, newVerrification이 리턴된다.
       expect(verificationRepository.create).toHaveBeenCalledWith({
         user: newUser,
       });
-      // verificationRepository.save는 newVerification과 콜이 되어야 한다.
       expect(verificationRepository.save).toHaveBeenCalledWith(newVerification);
 
       expect(mailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
@@ -253,6 +248,32 @@ describe("UserService", () => {
         newUser.email,
         newVerification.code,
       );
+    });
+
+    it("should change password", async () => {
+      const userId = 1;
+      const prevPassword = "wow@prev.com";
+      const newPassword = "wow@new.com";
+
+      userRepository.findOne.mockResolvedValue({
+        password: prevPassword,
+      });
+      const result = await service.editProfile(userId, {
+        password: newPassword,
+      });
+
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+      expect(userRepository.save).toHaveBeenCalledWith({
+        password: newPassword,
+      });
+      expect(result).toEqual({ ok: true });
+    });
+
+    it("should fail on exception", async () => {
+      const userId = 1;
+      userRepository.findOneOrFail.mockRejectedValue(new Error());
+      const result = await service.editProfile(userId, { email: "fail" });
+      expect(result).toEqual({ ok: false, error: "Could not update profile." });
     });
   });
 
