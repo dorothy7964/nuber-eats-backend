@@ -2,12 +2,10 @@ import { Test } from "@nestjs/testing";
 import * as jwt from "jsonwebtoken";
 import { CONFIG_OPTIONS } from "src/common/common.constants";
 import { JwtService } from "./jwt.service";
-import { Token } from "graphql";
 
 const TEST_KEY = "testKey";
 const USER_ID = 1;
 
-// 인자로는 npm module의 이름이 들어간다.
 jest.mock("jsonwebtoken", () => {
   return {
     sign: jest.fn(() => "TOKEN"),

@@ -19,11 +19,7 @@ export class MailService {
       });
   }
 
-  private async sendEmail(
-    subject: string,
-    template: string,
-    emailVars: EmailVar[],
-  ) {
+  async sendEmail(subject: string, template: string, emailVars: EmailVar[]) {
     const form = new FormData();
     form.append("from", `Nubber Eats <mailgun@${this.options.domain}>`);
     form.append("to", `${this.options.toEmail}`);
@@ -31,9 +27,8 @@ export class MailService {
     form.append("template", template);
     emailVars.forEach((eVar) => form.append(`v:${eVar.key}`, eVar.value));
 
-    console.log("📢 [mail.service.ts:29]", "sendEmail 함수실행");
     try {
-      const response = await fetch(
+      await fetch(
         `https://api.mailgun.net/v3/${this.options.domain}/messages`,
         {
           method: "POST",
@@ -43,29 +38,13 @@ export class MailService {
           body: form,
         },
       );
-
-      if (!response.ok) {
-        const errorDetails = await response.json();
-        throw new Error(`Failed to send email: ${errorDetails.message}`);
-      }
-
-      const result = await response.json();
-      console.log(
-        "📢 [mail.service.ts:35]",
-        "Email sent successfully:",
-        result,
-      );
-      return result;
+      return true;
     } catch (error) {
-      console.error(
-        "📢 [mail.service.ts:39]",
-        "Error sending email:",
-        error.message,
-      );
-      throw error;
+      return false;
     }
   }
-  private async sendEmailDemo(
+
+  async sendEmailDemo(
     subject: string,
     template: string,
     emailVars: EmailVar[],
@@ -76,7 +55,12 @@ export class MailService {
     form.append("subject", subject);
     form.append("template", template);
     emailVars.forEach((eVar) => form.append(`v:${eVar.key}`, eVar.value));
-    console.log("📢 [sendEmailDemo-form: ]", form);
+    // console.log("📢 [sendEmailDemo-form: ]", form);
+    try {
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   async sendVerificationEmail(email: string, code: string) {
@@ -84,7 +68,7 @@ export class MailService {
      * 메일건 계정이 비활성화 계정으로 되어있어 sendEmail함수가 작동하지 않음
      * 임시로 sendEmailDemo 함수로 보내주자
      */
-    this.sendEmailDemo("Verify Your Email", "verify-email", [
+    await this.sendEmailDemo("Verify Your Email", "verify-email", [
       { key: "username", value: email },
       { key: "code", value: code },
     ]);
