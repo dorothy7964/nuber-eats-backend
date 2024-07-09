@@ -19,7 +19,11 @@ export class MailService {
       });
   }
 
-  async sendEmail(subject: string, template: string, emailVars: EmailVar[]) {
+  async sendEmail(
+    subject: string,
+    template: string,
+    emailVars: EmailVar[],
+  ): Promise<boolean> {
     const form = new FormData();
     form.append("from", `Nubber Eats <mailgun@${this.options.domain}>`);
     form.append("to", `${this.options.toEmail}`);

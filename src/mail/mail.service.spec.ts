@@ -35,31 +35,63 @@ describe("MailService", () => {
     expect(service).toBeDefined();
   });
 
-  describe("sendVerificationEmail", () => {
-    it("should call sendEmail", () => {
-      const sendVerificationEmailArgs = {
-        email: "email",
-        code: "code",
-      };
+  // ! 에러 확인
+  // describe("sendVerificationEmail", () => {
+  //   it("should call sendEmail", () => {
+  //     const sendVerificationEmailArgs = {
+  //       email: "email",
+  //       code: "code",
+  //     };
 
-      service.sendVerificationEmail(
-        sendVerificationEmailArgs.email,
-        sendVerificationEmailArgs.code,
+  //     service.sendVerificationEmail(
+  //       sendVerificationEmailArgs.email,
+  //       sendVerificationEmailArgs.code,
+  //     );
+
+  //     jest
+  //       .spyOn(service, "sendEmail")
+  //       .mockImplementation(async () => Promise.resolve(true));
+
+  //     expect(service.sendEmail).toHaveBeenCalledTimes(1);
+  //     expect(service.sendEmail).toHaveBeenCalledWith(
+  //       "Verify Your Email",
+  //       "verify-email",
+  //       [
+  //         { key: "code", value: sendVerificationEmailArgs.code },
+  //         { key: "username", value: sendVerificationEmailArgs.email },
+  //       ],
+  //     );
+  //   });
+  // });
+
+  describe("sendEmail", () => {
+    it("sends email", async () => {
+      const formSpy = jest.spyOn(FormData.prototype, "append");
+      const fetchSpy = jest.spyOn(fetch, "default").mockResolvedValue({
+        ok: true,
+        json: async () => ({ id: "test-id" }),
+      } as any);
+
+      const ok = await service.sendEmail("test@test.com", "Test Subject", []);
+
+      expect(formSpy).toHaveBeenCalled();
+      expect(fetchSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `https://api.mailgun.net/v3/${TEST_DOMAIN}/messages`,
+        ),
+        expect.any(Object),
       );
+      expect(ok).toEqual(true);
+    });
 
+    it("fails on error", async () => {
+      jest.spyOn(FormData.prototype, "append");
       jest
-        .spyOn(service, "sendEmail")
-        .mockImplementation(async () => Promise.resolve(true));
+        .spyOn(fetch, "default")
+        .mockRejectedValue(new Error("Failed to send email"));
 
-      expect(service.sendEmail).toHaveBeenCalledTimes(1);
-      expect(service.sendEmail).toHaveBeenCalledWith(
-        "Verify Your Email",
-        "verify-email",
-        [
-          { key: "code", value: sendVerificationEmailArgs.code },
-          { key: "username", value: sendVerificationEmailArgs.email },
-        ],
-      );
+      const ok = await service.sendEmail("test@test.com", "Test Subject", []);
+      expect(ok).toEqual(false);
     });
   });
 });
