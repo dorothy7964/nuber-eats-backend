@@ -1,23 +1,32 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
-import { DataSource, getConnection } from "typeorm";
+import * as request from "supertest";
+import { DataSource } from "typeorm";
 import { AppModule } from "../src/app.module";
+
+const GRAPHQL_ENDPOINT = "/graphql";
+
+const testUser = {
+  email: "e2e@gmail.com",
+  password: "123",
+};
 
 describe("UserModule (e2e)", () => {
   let app: INestApplication;
   let dataSource: DataSource;
 
+  const baseTest = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
+  const publicTest = (query: string) => baseTest().send({ query });
+
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      // 기본적으로 전체 모듈인 AppModule을 import 하기
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
 
-    dataSource = app.get(DataSource); // AppModule에서 DataSource 인스턴스를 가져오기
-    console.log("📢 [user.e2e-spec.ts:20]", dataSource);
+    dataSource = moduleFixture.get(DataSource); // AppModule에서 DataSource 인스턴스를 가져오기
   });
 
   afterAll(async () => {
@@ -26,7 +35,28 @@ describe("UserModule (e2e)", () => {
     await app.close();
   });
 
-  it.todo("createAccount");
+  describe("createAccount", () => {
+    it("should create account", () => {
+      return publicTest(`
+            mutation {
+            createAccount(input: {
+              email:"${testUser.email}",
+              password:"${testUser.password}",
+              role: Owner
+            }) {
+              ok
+              error
+            }
+          }
+          `)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body.data.createAccount.ok).toBe(true);
+          expect(res.body.data.createAccount.error).toBe(null);
+        });
+    });
+  });
+
   it.todo("userProfile");
   it.todo("login");
   it.todo("me");
