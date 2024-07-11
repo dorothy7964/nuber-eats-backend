@@ -4,6 +4,14 @@ import * as request from "supertest";
 import { DataSource } from "typeorm";
 import { AppModule } from "../src/app.module";
 
+/** 이메일 보내기 구현되면 mock함수 사용하기 
+jest.mock("fetch", () => {
+  return {
+    post: jest.fn(),
+  };
+});
+*/
+
 const GRAPHQL_ENDPOINT = "/graphql";
 
 const testUser = {
@@ -53,6 +61,33 @@ describe("UserModule (e2e)", () => {
         .expect((res) => {
           expect(res.body.data.createAccount.ok).toBe(true);
           expect(res.body.data.createAccount.error).toBe(null);
+        });
+    });
+
+    it("should fail if account already exists", () => {
+      return publicTest(`
+          mutation {
+            createAccount(input: {
+              email:"${testUser.email}",
+              password:"${testUser.password}",
+              role:Owner
+            }) {
+              ok
+              error
+            }
+          }
+        `)
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                createAccount: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toBe("There is a user with that email already");
         });
     });
   });
