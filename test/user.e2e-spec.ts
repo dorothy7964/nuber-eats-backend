@@ -169,8 +169,7 @@ describe("UserModule (e2e)", () => {
     });
 
     it("should see a user's profile", () => {
-      return privateTest(
-        `
+      return privateTest(`
           {
             userProfile(userId: ${userId}) {
               ok
@@ -180,8 +179,7 @@ describe("UserModule (e2e)", () => {
               }
             }
           }
-          `,
-      )
+          `)
         .expect(200)
         .expect((res) => {
           const {
@@ -202,8 +200,7 @@ describe("UserModule (e2e)", () => {
     });
 
     it("should not find a profile", () => {
-      return privateTest(
-        `
+      return privateTest(`
           {
             userProfile(userId: 9999) {
               ok
@@ -213,8 +210,7 @@ describe("UserModule (e2e)", () => {
               }
             }
           }
-          `,
-      )
+          `)
         .expect(200)
         .expect((res) => {
           const {
@@ -233,16 +229,14 @@ describe("UserModule (e2e)", () => {
 
   describe("me", () => {
     it("should find my profile", () => {
-      return privateTest(
-        `
+      return privateTest(`
           {
             me {
               id
               email
             }
           }
-          `,
-      )
+          `)
         .expect(200)
         .expect((res) => {
           const {
@@ -257,16 +251,15 @@ describe("UserModule (e2e)", () => {
     });
 
     it("should not allow logged out user", () => {
-      return publicTest(
-        `
+      return publicTest(`
+       
           {
             me {
               id
               email
             }
           }
-          `,
-      )
+          `)
         .expect(200)
         .expect((res) => {
           const {
@@ -278,6 +271,59 @@ describe("UserModule (e2e)", () => {
     });
   });
 
-  it.todo("verifyEmail");
+  describe("editProfile", () => {
+    const NEW_EMAIL = "new@mail.com";
+
+    it("", () => {
+      return privateTest(`
+        mutation {
+          editProfile(input:{
+            email:"${NEW_EMAIL}"
+          }){
+            ok
+            error
+          }
+        }
+      `)
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                editProfile: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+
+    it("should have new email", () => {
+      return privateTest(`
+        mutation {
+          editProfile(input:{
+            email:"${NEW_EMAIL}"
+          }){
+            ok
+            error
+          }
+        }
+      `)
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                editProfile: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+  });
+
   it.todo("editProfile");
 });
