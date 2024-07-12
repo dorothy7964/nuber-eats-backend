@@ -6,6 +6,7 @@ import { AppModule } from "../src/app.module";
 import { User } from "src/user/entities/user.entity";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import exp from "constants";
+import { Verification } from "src/user/entities/verification.entity";
 
 /** 이메일 보내기 구현되면 mock함수 사용하기 
 jest.mock("fetch", () => {
@@ -27,6 +28,7 @@ describe("UserModule (e2e)", () => {
   let dataSource: DataSource;
   let jwtToken: string;
   let usersRepository: Repository<User>;
+  let verificationsRepository: Repository<Verification>;
 
   const baseTest = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
   const publicTest = (query: string) => baseTest().send({ query });
@@ -40,6 +42,10 @@ describe("UserModule (e2e)", () => {
 
     app = module.createNestApplication();
     usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    verificationsRepository = module.get<Repository<Verification>>(
+      getRepositoryToken(Verification),
+    );
+
     await app.init();
 
     dataSource = module.get(DataSource); // AppModule에서 DataSource 인스턴스를 가져오기
@@ -252,7 +258,6 @@ describe("UserModule (e2e)", () => {
 
     it("should not allow logged out user", () => {
       return publicTest(`
-       
           {
             me {
               id
@@ -274,7 +279,7 @@ describe("UserModule (e2e)", () => {
   describe("editProfile", () => {
     const NEW_EMAIL = "new@mail.com";
 
-    it("", () => {
+    it("should change email", () => {
       return privateTest(`
         mutation {
           editProfile(input:{
@@ -325,5 +330,62 @@ describe("UserModule (e2e)", () => {
     });
   });
 
-  it.todo("editProfile");
+  describe("verifyEmail", () => {
+    let verificationCode: string;
+
+    beforeAll(async () => {
+      const [verification] = await verificationsRepository.find();
+      verificationCode = verification.code;
+    });
+
+    it("should verify email", () => {
+      return publicTest(`
+          mutation {
+            verifyEmail(input:{
+              code:"${verificationCode}"
+            }){
+              ok
+              error
+            }
+          }
+        `)
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                verifyEmail: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+        });
+    });
+
+    it("should fail on verification code not found", () => {
+      return publicTest(`
+          mutation {
+            verifyEmail(input:{
+              code:"xxxxx"
+            }){
+              ok
+              error
+            }
+          }
+        `)
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                verifyEmail: { ok, error },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toBe("Verification not found.");
+        });
+    });
+  });
 });
