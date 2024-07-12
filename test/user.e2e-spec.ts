@@ -1,8 +1,11 @@
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import * as request from "supertest";
-import { DataSource } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { AppModule } from "../src/app.module";
+import { User } from "src/user/entities/user.entity";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import exp from "constants";
 
 /** 이메일 보내기 구현되면 mock함수 사용하기 
 jest.mock("fetch", () => {
@@ -23,19 +26,23 @@ describe("UserModule (e2e)", () => {
   let app: INestApplication;
   let dataSource: DataSource;
   let jwtToken: string;
+  let usersRepository: Repository<User>;
 
   const baseTest = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
   const publicTest = (query: string) => baseTest().send({ query });
+  const privateTest = (query: string) =>
+    baseTest().set("X-JWT", jwtToken).send({ query });
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = module.createNestApplication();
+    usersRepository = module.get<Repository<User>>(getRepositoryToken(User));
     await app.init();
 
-    dataSource = moduleFixture.get(DataSource); // AppModule에서 DataSource 인스턴스를 가져오기
+    dataSource = module.get(DataSource); // AppModule에서 DataSource 인스턴스를 가져오기
   });
 
   afterAll(async () => {
@@ -153,7 +160,77 @@ describe("UserModule (e2e)", () => {
     });
   });
 
-  it.todo("userProfile");
+  describe("userProfile", () => {
+    let userId: number;
+
+    beforeAll(async () => {
+      const [user] = await usersRepository.find();
+      userId = user.id;
+    });
+
+    it("should see a user's profile", () => {
+      return privateTest(
+        `
+          {
+            userProfile(userId: ${userId}) {
+              ok
+              error
+              user {
+                id
+              }
+            }
+          }
+          `,
+      )
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                userProfile: {
+                  ok,
+                  error,
+                  user: { id },
+                },
+              },
+            },
+          } = res;
+          expect(ok).toBe(true);
+          expect(error).toBe(null);
+          expect(id).toBe(userId);
+        });
+    });
+
+    it("should not find a profile", () => {
+      return privateTest(
+        `
+          {
+            userProfile(userId: 9999) {
+              ok
+              error
+              user {
+                id
+              }
+            }
+          }
+          `,
+      )
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                userProfile: { ok, error, user },
+              },
+            },
+          } = res;
+          expect(ok).toBe(false);
+          expect(error).toBe("User Not Found");
+          expect(user).toBe(null);
+        });
+    });
+  });
+
   it.todo("me");
   it.todo("verifyEmail");
   it.todo("editProfile");
