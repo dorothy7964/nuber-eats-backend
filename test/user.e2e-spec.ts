@@ -231,7 +231,53 @@ describe("UserModule (e2e)", () => {
     });
   });
 
-  it.todo("me");
+  describe("me", () => {
+    it("should find my profile", () => {
+      return privateTest(
+        `
+          {
+            me {
+              id
+              email
+            }
+          }
+          `,
+      )
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: {
+              data: {
+                me: { email },
+              },
+            },
+          } = res;
+          expect(email).toBe(testUser.email);
+        });
+    });
+
+    it("should not allow logged out user", () => {
+      return publicTest(
+        `
+          {
+            me {
+              id
+              email
+            }
+          }
+          `,
+      )
+        .expect(200)
+        .expect((res) => {
+          const {
+            body: { errors },
+          } = res;
+          const [error] = errors;
+          expect(error.message).toBe("Forbidden resource");
+        });
+    });
+  });
+
   it.todo("verifyEmail");
   it.todo("editProfile");
 });
