@@ -11,7 +11,6 @@ import { loginMutation } from "./mutations/loginMutation";
 import { userProfileQuery } from "./queries/userProfileQuery";
 import { editProfileMutation } from "./mutations/editProfileMutation";
 import { meQuery } from "./queries/meQuery";
-import { verifyEmailMutation } from "./mutations/verifyEmailMutation";
 
 /** 이메일 보내기 구현되면 mock함수 사용하기 
 jest.mock("fetch", () => {
@@ -152,22 +151,42 @@ describe("UserModule (e2e)", () => {
   });
 
   describe("me", () => {
-    const QUERY = meQuery();
-
     it("should find my profile", () => {
-      return privateTest(QUERY)
+      return privateTest(`
+          {
+            me {
+              id
+              email
+            }
+          }
+          `)
         .expect(200)
         .expect((res) => {
-          const { email } = res.body.data.me;
+          const {
+            body: {
+              data: {
+                me: { email },
+              },
+            },
+          } = res;
           expect(email).toBe(TEST_USER.email);
         });
     });
 
     it("should not allow logged out user", () => {
-      return publicTest(QUERY)
+      return publicTest(`
+          {
+            me {
+              id
+              email
+            }
+          }
+          `)
         .expect(200)
         .expect((res) => {
-          const { errors } = res.body;
+          const {
+            body: { errors },
+          } = res;
           const [error] = errors;
           expect(error.message).toBe("Forbidden resource");
         });
@@ -208,26 +227,51 @@ describe("UserModule (e2e)", () => {
       verificationCode = verification.code;
     });
 
-    const query = (verificationCode: string) =>
-      verifyEmailMutation(verificationCode);
-
     it("should verify email", () => {
-      return publicTest(query(verificationCode))
+      return publicTest(`
+          mutation {
+            verifyEmail(input:{
+              code:"${verificationCode}"
+            }){
+              ok
+              error
+            }
+          }
+        `)
         .expect(200)
         .expect((res) => {
-          const { ok, error } = res.body.data.verifyEmail;
+          const {
+            body: {
+              data: {
+                verifyEmail: { ok, error },
+              },
+            },
+          } = res;
           expect(ok).toBe(true);
           expect(error).toBe(null);
         });
     });
 
     it("should fail on verification code not found", () => {
-      const WRONG_CODE = "xxx";
-
-      return publicTest(query(WRONG_CODE))
+      return publicTest(`
+          mutation {
+            verifyEmail(input:{
+              code:"xxxxx"
+            }){
+              ok
+              error
+            }
+          }
+        `)
         .expect(200)
         .expect((res) => {
-          const { ok, error } = res.body.data.verifyEmail;
+          const {
+            body: {
+              data: {
+                verifyEmail: { ok, error },
+              },
+            },
+          } = res;
           expect(ok).toBe(false);
           expect(error).toBe("Verification not found.");
         });
