@@ -9,10 +9,9 @@ import { User } from "src/user/entities/user.entity";
 @ObjectType()
 @Entity()
 export class Restaurant extends CoreEntity {
-  @Field(() => String) // graphql 위한 것
-  @Column() // database 위한 것
-  @IsString() // validation 위한 것
-  @Length(5) // validation 위한 것
+  @Field(() => String)
+  @Column({ unique: true })
+  @IsString()
   name: string;
 
   @Field(() => String)

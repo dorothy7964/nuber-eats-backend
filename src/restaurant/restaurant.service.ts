@@ -23,6 +23,17 @@ export class RestaurantService {
     createRestaurantInput: CreateRestaurantInput,
   ): Promise<CreateRestaurantOutput> {
     try {
+      const existingRestaurant = await this.restaurant.findOne({
+        where: { name: createRestaurantInput.name },
+      });
+
+      if (existingRestaurant) {
+        return {
+          ok: false,
+          error: "A restaurant with that name already exists",
+        };
+      }
+
       const newRestaurant = this.restaurant.create(createRestaurantInput);
       newRestaurant.owner = owner;
       const categoryName = createRestaurantInput.categoryName
@@ -40,6 +51,7 @@ export class RestaurantService {
       await this.restaurant.save(newRestaurant);
       return { ok: true };
     } catch (error) {
+      console.log("📢 [restaurant.service.ts:43]", error);
       return {
         ok: false,
         error: "Could not create restaurant",
