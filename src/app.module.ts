@@ -16,6 +16,8 @@ import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { Verification } from "./user/entities/verification.entity";
 import { MailModule } from "./mail/mail.module";
+import { Restaurant } from "./restaurant/entities/restaurant.entity";
+import { Category } from "./restaurant/entities/cetegory.entity";
 
 @Module({
   imports: [
@@ -47,7 +49,7 @@ import { MailModule } from "./mail/mail.module";
       synchronize: process.env.NODE_ENV !== "prod",
       logging:
         process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
-      entities: [User, Verification],
+      entities: [User, Verification, Restaurant, Category],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

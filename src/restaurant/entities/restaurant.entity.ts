@@ -1,39 +1,31 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { CoreEntity } from "src/common/entities/core.entity";
+import { Column, Entity, ManyToOne, OneToMany, RelationId } from "typeorm";
+import { Category } from "./cetegory.entity";
+import { User } from "src/user/entities/user.entity";
 
 @InputType({ isAbstract: true })
 @ObjectType()
 @Entity()
-export class Restaurant {
-  @PrimaryGeneratedColumn()
-  @Field(() => Number)
-  id: number;
+export class Restaurant extends CoreEntity {
+  @Field(() => String) // graphql 위한 것
+  @Column() // database 위한 것
+  @IsString() // validation 위한 것
+  @Length(5) // validation 위한 것
+  name: string;
 
   @Field(() => String)
   @Column()
   @IsString()
-  @Length(5)
-  name: string;
+  coverImg: string;
 
-  @Field(() => Boolean, { nullable: true }) // graphql 위한 것
-  @Column({ default: true }) // database 위한 것
-  @IsOptional() // validation 위한 것
-  @IsBoolean() // validation 위한 것
-  isVegan: boolean;
-
-  @Field(() => String, { defaultValue: "Not entered" })
+  @Field(() => String)
   @Column()
   @IsString()
   address: string;
 
-  @Field(() => String)
-  @Column()
-  @IsString()
-  ownersName: string;
-
-  @Field(() => String)
-  @Column()
-  @IsString()
-  categoryName: string;
+  @Field(() => Category, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.restaurants)
+  category: Category;
 }

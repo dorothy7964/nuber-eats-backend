@@ -10,6 +10,22 @@
 
 <br/><br/>
 
+# jest 실행
+
+```javascript
+ npm run test:watch
+```
+
+<br/><br/>
+
+# E2E 실행
+
+```javascript
+ npm run test:e2e
+```
+
+<br/><br/>
+
 # Playground
 
 http://localhost:3000/graphql
