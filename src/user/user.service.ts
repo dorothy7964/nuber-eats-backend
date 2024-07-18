@@ -27,7 +27,13 @@ export class UserService {
   ): Promise<EditProfileOutput> {
     try {
       const user = await this.user.findOne({ where: { id: userId } });
+
       if (email) {
+        const existingUser = await this.user.findOne({ where: { email } });
+        if (existingUser && existingUser.id !== userId) {
+          return { ok: false, error: "Email is already in use." };
+        }
+
         user.email = email;
         user.verified = false;
         await this.verification.delete({

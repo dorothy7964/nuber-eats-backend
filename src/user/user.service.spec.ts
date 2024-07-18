@@ -202,6 +202,41 @@ describe("UserService", () => {
   });
 
   describe("editProfile", () => {
+    it("should not change email if it is already in use", async () => {
+      const userId = 1;
+      const newEmail = "wow@new.com";
+
+      const user = {
+        id: userId,
+        email: "wow@old.com",
+        verified: true,
+      };
+
+      const existingUser = {
+        id: 2,
+        email: newEmail,
+      };
+
+      userRepository.findOne
+        .mockResolvedValueOnce(user)
+        .mockResolvedValueOnce(existingUser); // 첫 호출: 기존 사용자, 두 번째 호출: 중복 이메일 검사
+
+      const result = await service.editProfile(userId, { email: newEmail });
+
+      expect(userRepository.findOne).toHaveBeenCalledTimes(2);
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: newEmail },
+      });
+
+      expect(result).toEqual({
+        ok: false,
+        error: "Email is already in use.",
+      });
+    });
+
     it("should change email", async () => {
       const userId = 1;
       const newEmail = "wow@new.com";
@@ -222,16 +257,23 @@ describe("UserService", () => {
         user: newUser,
         code: "verification-code",
       };
-      userRepository.findOne.mockResolvedValue(user);
+
+      userRepository.findOne
+        .mockResolvedValueOnce(user) // 첫 호출: 기존 사용자
+        .mockResolvedValueOnce(null); // 두 번째 호출: 중복 이메일 검사
+
       verificationRepository.delete.mockResolvedValue({ affected: 1 });
       verificationRepository.create.mockReturnValue(newVerification);
       verificationRepository.save.mockResolvedValue(newVerification);
 
       await service.editProfile(userId, { email: newEmail });
 
-      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(userRepository.findOne).toHaveBeenCalledTimes(2);
       expect(userRepository.findOne).toHaveBeenCalledWith({
         where: { id: userId },
+      });
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: newEmail },
       });
 
       expect(verificationRepository.delete).toHaveBeenCalledTimes(1);
