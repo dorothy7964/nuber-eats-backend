@@ -1,12 +1,12 @@
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { AuthUser } from "src/auth/auth-user.decorator";
+import { User } from "src/user/entities/user.entity";
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from "./dto/create-restaurant.dto";
 import { Restaurant } from "./entities/restaurant.entity";
 import { RestaurantService } from "./restaurant.service";
-import { User } from "src/user/entities/user.entity";
-import { AuthUser } from "src/auth/auth-user.decorator";
 
 @Resolver(() => Restaurant)
 export class RestaurantResolver {
