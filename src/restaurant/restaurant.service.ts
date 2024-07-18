@@ -39,6 +39,7 @@ export class RestaurantService {
       const categoryName = createRestaurantInput.categoryName
         .trim()
         .toLowerCase();
+      //! categorySlug 분리하기
       const categorySlug = categoryName.replace(/ /g, "-");
       let category = await this.category.findOne({
         where: { slug: categorySlug },
