@@ -18,6 +18,7 @@ import { Verification } from "./user/entities/verification.entity";
 import { MailModule } from "./mail/mail.module";
 import { Restaurant } from "./restaurant/entities/restaurant.entity";
 import { Category } from "./restaurant/entities/cetegory.entity";
+import { RestaurantModule } from "./restaurant/restaurant.module";
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { Category } from "./restaurant/entities/cetegory.entity";
     }),
     UserModule,
     AuthModule,
+    RestaurantModule,
   ],
 })
 export class AppModule implements NestModule {
