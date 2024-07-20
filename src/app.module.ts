@@ -66,6 +66,7 @@ import { RestaurantModule } from "./restaurant/restaurant.module";
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
       toEmail: process.env.MAILGUN_TO_EMAIL,
     }),
+    AuthModule,
     UserModule,
     AuthModule,
     RestaurantModule,
