@@ -1,9 +1,9 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
-import { IsBoolean, IsOptional, IsString, Length } from "class-validator";
+import { IsString } from "class-validator";
 import { CoreEntity } from "src/common/entities/core.entity";
-import { Column, Entity, ManyToOne, OneToMany, RelationId } from "typeorm";
-import { Category } from "./cetegory.entity";
 import { User } from "src/user/entities/user.entity";
+import { Column, Entity, ManyToOne, RelationId } from "typeorm";
+import { Category } from "./cetegory.entity";
 
 @InputType("RestaurantInputType", { isAbstract: true })
 @ObjectType()
@@ -38,8 +38,8 @@ export class Restaurant extends CoreEntity {
   })
   owner: User;
 
-  // @RelationId((restaurant: Restaurant) => restaurant.owner)
-  // ownerId: number;
+  @RelationId((restaurant: Restaurant) => restaurant.owner)
+  ownerId: number;
 
   // @Field(() => [Order])
   // @OneToMany(() => Order, (order) => order.restaurant)

@@ -5,9 +5,13 @@ import { User } from "src/user/entities/user.entity";
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
-} from "./dto/create-restaurant.dto";
+} from "./dtos/create-restaurant.dto";
 import { Restaurant } from "./entities/restaurant.entity";
 import { RestaurantService } from "./restaurant.service";
+import {
+  EditRestaurantInput,
+  EditRestaurantOutput,
+} from "./dtos/edit-restaurant.dto";
 
 @Resolver(() => Restaurant)
 export class RestaurantResolver {
@@ -23,5 +27,14 @@ export class RestaurantResolver {
       authUser,
       createRestaurantInput,
     );
+  }
+
+  @Mutation((returns) => EditRestaurantOutput)
+  @Role(["Owner"])
+  editRestaurant(
+    @AuthUser() owner: User,
+    @Args("input") editRestaurantInput: EditRestaurantInput,
+  ): Promise<EditRestaurantOutput> {
+    return this.restaurantService.editRestaurant(owner, editRestaurantInput);
   }
 }
