@@ -40,6 +40,7 @@ src/
 │   ├── auth-user.decorator.ts
 │   ├── auth.guard.ts
 │   └── auth.module.ts
+│   └── role.decorator.ts
 ├── common/
 │   ├── dtos/
 │   │   ├── output.dto.ts
@@ -60,6 +61,7 @@ src/
 │   │   ├── create-restaurant.dto.ts
 │   │   ├── update-restaurant.dto.ts
 │   ├── entities/
+│   │   ├── cetegory.entity.ts
 │   │   ├── restaurant.entity.ts
 │   ├── restaurant.module.ts
 │   ├── restaurant.resolver.ts
@@ -97,3 +99,10 @@ src/
   - client : 사용자, 레스토랑 리스트 목록이 보인다.
   - owner : 레스토랑 등록한 사장, 대시보드가 보인다.
   - delivery : 배달원, 현재 갈 수 있는 모든 주문의 실시간 상황이 보인다.
+    <br/><br/>
+
+# Role
+
+Owner
+
+- 레스토랑 생성, 수정, 삭제

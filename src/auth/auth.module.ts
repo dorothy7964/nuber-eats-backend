@@ -4,7 +4,6 @@ import { AuthGuard } from "./auth.guard";
 import { UserModule } from "src/user/user.module";
 
 @Module({
-  imports: [UserModule],
   providers: [
     {
       provide: APP_GUARD,

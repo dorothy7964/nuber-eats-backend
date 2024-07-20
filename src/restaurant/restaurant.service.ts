@@ -26,7 +26,6 @@ export class RestaurantService {
       const existingRestaurant = await this.restaurant.findOne({
         where: { name: createRestaurantInput.name },
       });
-
       if (existingRestaurant) {
         return {
           ok: false,
