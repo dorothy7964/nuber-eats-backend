@@ -1,25 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
-import { Restaurant } from "./entities/restaurant.entity";
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from "./dtos/create-restaurant.dto";
-import { User } from "src/user/entities/user.entity";
-import { Category } from "./entities/cetegory.entity";
 import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from "./dtos/edit-restaurant.dto";
+import { Restaurant } from "./entities/restaurant.entity";
+import { CategoryRepository } from "./repositories/category.repository";
 
 @Injectable()
 export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-    @InjectRepository(Category)
-    private readonly category: Repository<Category>,
+    private readonly categories: CategoryRepository,
   ) {}
 
   async createRestaurant(
@@ -36,22 +35,12 @@ export class RestaurantService {
           error: "A restaurant with that name already exists",
         };
       }
-
       const newRestaurant = this.restaurants.create(createRestaurantInput);
       newRestaurant.owner = owner;
-      const categoryName = createRestaurantInput.categoryName
-        .trim()
-        .toLowerCase();
-      //! categorySlug 분리하기
-      const categorySlug = categoryName.replace(/ /g, "-");
-      let category = await this.category.findOne({
-        where: { slug: categorySlug },
-      });
-      if (!category) {
-        category = await this.category.save(
-          this.category.create({ slug: categorySlug, name: categoryName }),
-        );
-      }
+      const category = await this.categories.getOrCreate(
+        createRestaurantInput.categoryName,
+      );
+      newRestaurant.category = category;
       await this.restaurants.save(newRestaurant);
       return { ok: true };
     } catch {
