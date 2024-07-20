@@ -12,6 +12,7 @@ import {
 } from "./dtos/edit-restaurant.dto";
 import { Restaurant } from "./entities/restaurant.entity";
 import { CategoryRepository } from "./repositories/category.repository";
+import { Category } from "./entities/cetegory.entity";
 
 @Injectable()
 export class RestaurantService {
@@ -56,7 +57,6 @@ export class RestaurantService {
     editRestaurantInput: EditRestaurantInput,
   ): Promise<EditRestaurantOutput> {
     try {
-      // 1. 수정할 레스토랑 찾기
       const restaurant = await this.restaurants.findOne({
         where: { id: editRestaurantInput.restaurantId },
       });
@@ -67,14 +67,29 @@ export class RestaurantService {
         };
       }
 
-      // 2.  오너가 authorized된 사람인지  확인
-      if (owner.id !== restaurant.ownerId) {
+      const isNotAuthorizedOwner = owner.id !== restaurant.ownerId;
+      if (isNotAuthorizedOwner) {
         return {
           ok: false,
           error: "You can't edit a restaurant that you don't own",
         };
       }
 
+      let category: Category = null;
+      const isEditCategoryName = editRestaurantInput.categoryName;
+      if (isEditCategoryName) {
+        category = await this.categories.getOrCreate(
+          editRestaurantInput.categoryName,
+        );
+      }
+
+      await this.restaurants.save([
+        {
+          id: editRestaurantInput.restaurantId,
+          ...editRestaurantInput,
+          ...(category && { category }),
+        },
+      ]);
       return { ok: true };
     } catch {
       return {
