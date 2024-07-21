@@ -2,28 +2,31 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
+import { AllCategoriesOutput } from "./dtos/all-categories.dto";
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from "./dtos/create-restaurant.dto";
 import {
-  EditRestaurantInput,
-  EditRestaurantOutput,
-} from "./dtos/edit-restaurant.dto";
-import { Restaurant } from "./entities/restaurant.entity";
-import { CategoryRepository } from "./repositories/category.repository";
-import { Category } from "./entities/cetegory.entity";
-import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from "./dtos/delete-restaurant.dto";
+import {
+  EditRestaurantInput,
+  EditRestaurantOutput,
+} from "./dtos/edit-restaurant.dto";
+import { Category } from "./entities/category.entity";
+import { Restaurant } from "./entities/restaurant.entity";
+import { CategoryRepository } from "./repositories/category.repository";
 
 @Injectable()
 export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
-    private readonly categories: CategoryRepository,
+    @InjectRepository(Category)
+    private readonly categories: Repository<Category>,
+    private readonly categoryRepository: CategoryRepository,
   ) {}
 
   async createRestaurant(
@@ -42,7 +45,7 @@ export class RestaurantService {
       }
       const newRestaurant = this.restaurants.create(createRestaurantInput);
       newRestaurant.owner = owner;
-      const category = await this.categories.getOrCreate(
+      const category = await this.categoryRepository.getOrCreate(
         createRestaurantInput.categoryName,
       );
       newRestaurant.category = category;
@@ -82,7 +85,7 @@ export class RestaurantService {
       let category: Category = null;
       const isEditCategoryName = editRestaurantInput.categoryName;
       if (isEditCategoryName) {
-        category = await this.categories.getOrCreate(
+        category = await this.categoryRepository.getOrCreate(
           editRestaurantInput.categoryName,
         );
       }
@@ -132,6 +135,21 @@ export class RestaurantService {
       return {
         ok: false,
         error: "Could not delete Restaurant",
+      };
+    }
+  }
+
+  async allCategories(): Promise<AllCategoriesOutput> {
+    try {
+      const categories = await this.categories.find();
+      return {
+        ok: true,
+        categories,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: "Could not load categories",
       };
     }
   }

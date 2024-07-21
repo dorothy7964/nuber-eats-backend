@@ -3,7 +3,7 @@ import { IsString } from "class-validator";
 import { CoreEntity } from "src/common/entities/core.entity";
 import { User } from "src/user/entities/user.entity";
 import { Column, Entity, ManyToOne, RelationId } from "typeorm";
-import { Category } from "./cetegory.entity";
+import { Category } from "./category.entity";
 
 @InputType("RestaurantInputType", { isAbstract: true })
 @ObjectType()

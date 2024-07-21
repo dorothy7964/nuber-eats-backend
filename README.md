@@ -61,7 +61,7 @@ src/
 │   │   ├── create-restaurant.dto.ts
 │   │   ├── update-restaurant.dto.ts
 │   ├── entities/
-│   │   ├── cetegory.entity.ts
+│   │   ├── category.entity.ts
 │   │   ├── restaurant.entity.ts
 │   ├── restaurant.module.ts
 │   ├── restaurant.resolver.ts
