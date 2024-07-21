@@ -139,6 +139,13 @@ export class RestaurantService {
     }
   }
 
+  countRestaurants(category: Category) {
+    const restaurantCount = this.restaurants.count({
+      where: { category: { id: category.id } },
+    });
+    return restaurantCount;
+  }
+
   async allCategories(): Promise<AllCategoriesOutput> {
     try {
       const categories = await this.categories.find();
