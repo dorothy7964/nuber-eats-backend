@@ -19,6 +19,7 @@ import { Category } from "./entities/category.entity";
 import { Restaurant } from "./entities/restaurant.entity";
 import { CategoryRepository } from "./repositories/category.repository";
 import { CategoryInput, CategoryOutput } from "./dtos/category.dto";
+import { RestaurantsInput, RestaurantsOutput } from "./dtos/restaurants.dto";
 
 @Injectable()
 export class RestaurantService {
@@ -197,6 +198,26 @@ export class RestaurantService {
       return {
         ok: false,
         error: "Could not load category",
+      };
+    }
+  }
+
+  async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
+    try {
+      const [restaurants, totalResults] = await this.restaurants.findAndCount({
+        skip: (page - 1) * 3,
+        take: 3,
+      });
+      return {
+        ok: true,
+        results: restaurants,
+        totalPages: Math.ceil(totalResults / 3),
+        totalResults,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: "Could not load restaurants",
       };
     }
   }
