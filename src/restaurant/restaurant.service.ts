@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/user/entities/user.entity";
-import { Repository } from "typeorm";
+import { Raw, Repository } from "typeorm";
 import { AllCategoriesOutput } from "./dtos/all-categories.dto";
 import {
   CreateRestaurantInput,
@@ -25,12 +25,18 @@ import {
   SearchRestaurantInput,
   SearchRestaurantOutput,
 } from "./dtos/search-restaurant.dto";
+import {
+  DEFAULT_PAGE_LIMIT,
+  RestaurantRepository,
+} from "./repositories/restaurant.repository";
 
 @Injectable()
 export class RestaurantService {
   constructor(
     @InjectRepository(Restaurant)
     private readonly restaurants: Repository<Restaurant>,
+    private readonly restaurantRepository: RestaurantRepository,
+
     @InjectRepository(Category)
     private readonly categories: Repository<Category>,
     private readonly categoryRepository: CategoryRepository,
@@ -183,21 +189,15 @@ export class RestaurantService {
         };
       }
 
-      const restaurants = await this.restaurants.find({
-        where: {
-          category: { id: category.id },
-        },
-        take: 25,
-        skip: (page - 1) * 25,
-      });
-
-      const totalResults = await this.countRestaurants(category);
+      const [restaurants, totalResults] =
+        await this.restaurantRepository.findByCategory(category.id, page);
 
       return {
         ok: true,
         restaurants,
+        totalResults,
         category,
-        totalPages: Math.ceil(totalResults / 25),
+        totalPages: Math.ceil(totalResults / DEFAULT_PAGE_LIMIT),
       };
     } catch {
       return {
@@ -209,14 +209,15 @@ export class RestaurantService {
 
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
-      const [restaurants, totalResults] = await this.restaurants.findAndCount({
-        skip: (page - 1) * 3,
-        take: 3,
-      });
+      const PAGE_LIMIT: number = 3;
+
+      const [restaurants, totalResults] =
+        await this.restaurantRepository.findAllPaginated(page, PAGE_LIMIT);
+
       return {
         ok: true,
         results: restaurants,
-        totalPages: Math.ceil(totalResults / 3),
+        totalPages: Math.ceil(totalResults / PAGE_LIMIT),
         totalResults,
       };
     } catch {
@@ -257,18 +258,14 @@ export class RestaurantService {
     page,
   }: SearchRestaurantInput): Promise<SearchRestaurantOutput> {
     try {
-      const [restaurants, totalResults] = await this.restaurants.findAndCount({
-        where: {
-          name: Raw((name) => `${name} ILIKE '%${query}%'`),
-        },
-        skip: (page - 1) * 25,
-        take: 25,
-      });
+      const [restaurants, totalResults] =
+        await this.restaurantRepository.searchByName(query, page);
+
       return {
         ok: true,
         restaurants,
         totalResults,
-        totalPages: Math.ceil(totalResults / 25),
+        totalPages: Math.ceil(totalResults / DEFAULT_PAGE_LIMIT),
       };
     } catch {
       return { ok: false, error: "Could not search for restaurants" };
