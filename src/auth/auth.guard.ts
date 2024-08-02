@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { Observable } from "rxjs";
@@ -30,6 +35,13 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    return roles.includes(user.role);
+    const isRoleMatching = roles.includes(user.role);
+
+    if (!isRoleMatching) {
+      throw new UnauthorizedException(
+        "You are not authorized to access this feature.",
+      );
+    }
+    return true;
   }
 }

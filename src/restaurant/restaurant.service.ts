@@ -93,15 +93,6 @@ export class RestaurantService {
           error: "Restaurant not found",
         };
       }
-
-      const isNotAuthorizedOwner = owner.id !== restaurant.ownerId;
-      if (isNotAuthorizedOwner) {
-        return {
-          ok: false,
-          error: "You can't edit a restaurant that you don't own",
-        };
-      }
-
       let category: Category = null;
       const isEditCategoryName = editRestaurantInput.categoryName;
       if (isEditCategoryName) {
@@ -294,13 +285,6 @@ export class RestaurantService {
           error: "Restaurant not found",
         };
       }
-      const isNotRestaurantOwner = owner.id !== restaurant.ownerId;
-      if (isNotRestaurantOwner) {
-        return {
-          ok: false,
-          error: "You can't do that.",
-        };
-      }
       await this.dishes.save(
         this.dishes.create({ ...createDishInput, restaurant }),
       );
@@ -329,13 +313,6 @@ export class RestaurantService {
         return {
           ok: false,
           error: "Dish not found",
-        };
-      }
-      const isOwnerMismatch = dish.restaurant.ownerId !== owner.id;
-      if (isOwnerMismatch) {
-        return {
-          ok: false,
-          error: "You can't do that.",
         };
       }
       await this.dishes.save([
@@ -368,13 +345,6 @@ export class RestaurantService {
         return {
           ok: false,
           error: "Dish not found",
-        };
-      }
-      const isOwnerMismatch = dish.restaurant.ownerId !== owner.id;
-      if (isOwnerMismatch) {
-        return {
-          ok: false,
-          error: "You can't do that.",
         };
       }
       await this.dishes.delete(dishId);
