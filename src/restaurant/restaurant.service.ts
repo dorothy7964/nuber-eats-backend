@@ -29,6 +29,8 @@ import {
   DEFAULT_PAGE_LIMIT,
   RestaurantRepository,
 } from "./repositories/restaurant.repository";
+import { CreateDishInput, CreateDishOutput } from "./dtos/create-dish.dto";
+import { Dish } from "./entities/dish.entity";
 
 @Injectable()
 export class RestaurantService {
@@ -40,6 +42,9 @@ export class RestaurantService {
     @InjectRepository(Category)
     private readonly categories: Repository<Category>,
     private readonly categoryRepository: CategoryRepository,
+
+    @InjectRepository(Dish)
+    private readonly dishes: Repository<Dish>,
   ) {}
 
   async createRestaurant(
@@ -234,6 +239,7 @@ export class RestaurantService {
     try {
       const restaurant = await this.restaurants.findOne({
         where: { id: restaurantId },
+        relations: ["menu"],
       });
       if (!restaurant) {
         return {
@@ -269,6 +275,42 @@ export class RestaurantService {
       };
     } catch {
       return { ok: false, error: "Could not search for restaurants" };
+    }
+  }
+
+  async createDish(
+    owner: User,
+    createDishInput: CreateDishInput,
+  ): Promise<CreateDishOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        where: { id: createDishInput.restaurantId },
+      });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: "Restaurant not found",
+        };
+      }
+      const isNotRestaurantOwner = owner.id !== restaurant.ownerId;
+      if (isNotRestaurantOwner) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+      await this.dishes.save(
+        this.dishes.create({ ...createDishInput, restaurant }),
+      );
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        ok: false,
+        error: "Could not create dish",
+      };
     }
   }
 }
