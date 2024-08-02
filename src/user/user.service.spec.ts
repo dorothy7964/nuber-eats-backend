@@ -1,12 +1,11 @@
 import { Test } from "@nestjs/testing";
-import { UserService } from "./user.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { User, UserRole } from "./entities/user.entity";
-import { Verification } from "./entities/verification.entity";
 import { JwtService } from "src/jwt/jwt.service";
 import { MailService } from "src/mail/mail.service";
 import { Repository } from "typeorm";
-import { verify } from "crypto";
+import { User, UserRole } from "./entities/user.entity";
+import { Verification } from "./entities/verification.entity";
+import { UserService } from "./user.service";
 
 const mockRepository = () => ({
   create: jest.fn(),
