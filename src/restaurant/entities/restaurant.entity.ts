@@ -5,23 +5,24 @@ import { User } from "src/user/entities/user.entity";
 import { Column, Entity, ManyToOne, OneToMany, RelationId } from "typeorm";
 import { Category } from "./category.entity";
 import { Dish } from "./dish.entity";
+import { Order } from "src/order/entities/order.entity";
 
 @InputType("RestaurantInputType", { isAbstract: true })
 @ObjectType()
 @Entity()
 export class Restaurant extends CoreEntity {
-  @Field(() => String)
   @Column({ unique: true })
+  @Field(() => String)
   @IsString()
   name: string;
 
-  @Field(() => String)
   @Column()
+  @Field(() => String)
   @IsString()
   coverImg: string;
 
-  @Field(() => String)
   @Column()
+  @Field(() => String)
   @IsString()
   address: string;
 
@@ -42,19 +43,19 @@ export class Restaurant extends CoreEntity {
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
 
-  // @Field(() => [Order])
-  // @OneToMany(() => Order, (order) => order.restaurant)
-  // orders: Order[];
+  @Field(() => [Order])
+  @OneToMany(() => Order, (order) => order.restaurant)
+  orders: Order[];
 
   @Field(() => [Dish])
   @OneToMany(() => Dish, (dish) => dish.restaurant)
   menu: Dish[];
 
-  // @Field(() => Boolean)
   // @Column({ default: false })
+  // @Field(() => Boolean)
   // isPromoted: boolean;
 
-  // @Field(() => Date, { nullable: true })
   // @Column({ nullable: true })
+  // @Field(() => Date, { nullable: true })
   // promot;
 }

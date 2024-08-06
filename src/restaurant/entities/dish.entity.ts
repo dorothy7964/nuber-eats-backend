@@ -31,24 +31,24 @@ export class DishOption {
 @ObjectType()
 @Entity()
 export class Dish extends CoreEntity {
-  @Field(() => String)
   @Column()
+  @Field(() => String)
   @IsString()
   @Length(5)
   name: string;
 
-  @Field(() => Int)
   @Column()
+  @Field(() => Int)
   @IsNumber()
   price: number;
 
-  @Field(() => String, { nullable: true })
   @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
   @IsString()
   photo: string;
 
-  @Field(() => String)
   @Column()
+  @Field(() => String)
   @Length(5, 140)
   description: string;
 
@@ -61,7 +61,7 @@ export class Dish extends CoreEntity {
   @RelationId((dish: Dish) => dish.restaurant)
   restaurantId: number;
 
-  @Field(() => [DishOption], { nullable: true })
   @Column({ type: "json", nullable: true })
+  @Field(() => [DishOption], { nullable: true })
   options?: DishOption[];
 }
