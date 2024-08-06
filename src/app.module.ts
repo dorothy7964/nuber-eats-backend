@@ -9,20 +9,20 @@ import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import * as Joi from "joi";
+import { AuthModule } from "./auth/auth.module";
 import { JwtMiddleware } from "./jwt/jwt.middleware";
 import { JwtModule } from "./jwt/jwt.module";
-import { User } from "./user/entities/user.entity";
-import { UserModule } from "./user/user.module";
-import { AuthModule } from "./auth/auth.module";
-import { Verification } from "./user/entities/verification.entity";
 import { MailModule } from "./mail/mail.module";
-import { Restaurant } from "./restaurant/entities/restaurant.entity";
-import { Category } from "./restaurant/entities/category.entity";
-import { RestaurantModule } from "./restaurant/restaurant.module";
-import { Dish } from "./restaurant/entities/dish.entity";
-import { OrderModule } from "./order/order.module";
-import { Order } from "./order/entities/order.entity";
 import { OrderItem, OrderItemOption } from "./order/entities/order-item.entity";
+import { Order } from "./order/entities/order.entity";
+import { OrderModule } from "./order/order.module";
+import { Category } from "./restaurant/entities/category.entity";
+import { Dish } from "./restaurant/entities/dish.entity";
+import { Restaurant } from "./restaurant/entities/restaurant.entity";
+import { RestaurantModule } from "./restaurant/restaurant.module";
+import { User } from "./user/entities/user.entity";
+import { Verification } from "./user/entities/verification.entity";
+import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
@@ -61,6 +61,7 @@ import { OrderItem, OrderItemOption } from "./order/entities/order-item.entity";
         Category,
         Dish,
         Order,
+        OrderItem,
         OrderItemOption,
       ],
     }),
