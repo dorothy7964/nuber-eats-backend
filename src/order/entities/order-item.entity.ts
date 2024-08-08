@@ -9,7 +9,7 @@ export class OrderItemOption {
   @Field(() => String)
   name: string;
   @Field(() => String, { nullable: true })
-  choice: string;
+  choice?: string;
 }
 
 @InputType("OrderItemInputType", { isAbstract: true })
@@ -18,7 +18,7 @@ export class OrderItemOption {
 export class OrderItem extends CoreEntity {
   @Field(() => Dish)
   @ManyToOne(() => Dish, { nullable: true, onDelete: "CASCADE" })
-  dish: Dish;
+  dish?: Dish;
 
   @Field(() => [OrderItemOption], { nullable: true })
   @Column({ type: "json", nullable: true })

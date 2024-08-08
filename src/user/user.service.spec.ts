@@ -40,7 +40,7 @@ describe("UserService", () => {
       providers: [
         UserService,
         {
-          // USerRepository
+          // UserRepository
           provide: getRepositoryToken(User),
           useValue: mockRepository(),
         },
