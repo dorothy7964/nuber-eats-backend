@@ -79,6 +79,7 @@ describe("OrderService", () => {
     options: [],
     ...DISH_ENTITY,
   };
+
   const DISH_TWO: Dish = {
     id: 2,
     name: "name2",
@@ -86,6 +87,7 @@ describe("OrderService", () => {
     options: [{ name: "option1", extra: 1 }],
     ...DISH_ENTITY,
   };
+
   const DISH_THREE: Dish = {
     id: 3,
     name: "name3",
@@ -196,13 +198,69 @@ describe("OrderService", () => {
     });
 
     // 추가 비용이 있는 옵션 처리
-    it.todo("should add the extra cost of options to the base price");
+    it("should add the extra cost of options to the base price", async () => {
+      const createOrderArgs = {
+        restaurantId: 1,
+        items: [
+          {
+            dishId: 2,
+            options: [{ name: "option1" }],
+          },
+        ],
+      };
+
+      // 옵션의 추가 비용을 포함한 최종 가격을 계산
+      const extraCost = DISH_TWO.options[0].extra || 0;
+      const dishFinalPrice: number = DISH_TWO.price + extraCost;
+
+      restaurantsRepository.findOne.mockResolvedValue({});
+      dishesRepository.findOne.mockResolvedValue(DISH_TWO);
+
+      // Mocked order item
+      const mockOrderItem = {
+        dish: DISH_TWO,
+        options: createOrderArgs.items[0].options,
+      };
+      orderItemsRepository.create.mockReturnValue(mockOrderItem);
+      orderItemsRepository.save.mockResolvedValue(mockOrderItem);
+
+      ordersRepository.create.mockReturnValue({
+        customer,
+        restaurant: expect.any(Object),
+        total: dishFinalPrice,
+        items: [mockOrderItem],
+      });
+      ordersRepository.save.mockResolvedValue({ id: 1 });
+
+      const result = await service.createOrder(customer, createOrderArgs);
+
+      expect(dishesRepository.findOne).toHaveBeenCalledWith({
+        where: { id: createOrderArgs.items[0].dishId },
+      });
+
+      expect(ordersRepository.create).toHaveBeenCalledWith({
+        customer,
+        restaurant: expect.any(Object),
+        total: dishFinalPrice,
+        items: [mockOrderItem],
+      });
+
+      expect(ordersRepository.save).toHaveBeenCalledWith({
+        customer,
+        restaurant: expect.any(Object),
+        total: dishFinalPrice,
+        items: [mockOrderItem],
+      });
+
+      expect(result).toEqual({ ok: true, orderId: 1 });
+    });
 
     // 선택지에서 추가 비용이 있는 경우 처리
     it.todo("should add the extra cost of option choices to the base price");
 
     it("should fail on exception", async () => {
       restaurantsRepository.findOne.mockRejectedValue(new Error());
+
       const result = await service.createOrder(customer, createOrderArgs);
       expect(result).toEqual({
         ok: false,
