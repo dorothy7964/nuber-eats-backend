@@ -8,6 +8,7 @@ import { CreateOrderInput, CreateOrderOutput } from "./dtos/create-order.dto";
 import { OrderItem } from "./entities/order-item.entity";
 import { Order } from "./entities/order.entity";
 import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
+import { GetOrderInput, GetOrderOutput } from "./dtos/get-order.dto";
 
 @Injectable()
 export class OrderService {
@@ -166,6 +167,63 @@ export class OrderService {
       return {
         ok: false,
         error: "Could not get orders",
+      };
+    }
+  }
+
+  canSeeOrder(user: User, order: Order): boolean {
+    let isMatch = false;
+
+    switch (user.role) {
+      case UserRole.Client:
+        isMatch = order.customerId === user.id;
+        return isMatch;
+
+      case UserRole.Delivery:
+        isMatch = order.driverId === user.id;
+        return isMatch;
+
+      case UserRole.Owner:
+        isMatch = order.restaurant.ownerId === user.id;
+        return isMatch;
+
+      default:
+        isMatch = false;
+    }
+  }
+
+  async getOrder(
+    user: User,
+    { id: orderId }: GetOrderInput,
+  ): Promise<GetOrderOutput> {
+    try {
+      const order = await this.orders.findOne({
+        where: {
+          id: orderId,
+        },
+      });
+      if (!order) {
+        return {
+          ok: false,
+          error: "Order not found.",
+        };
+      }
+
+      const isOrderNotViewable = !this.canSeeOrder(user, order);
+      if (isOrderNotViewable) {
+        return {
+          ok: false,
+          error: "Can't see this.",
+        };
+      }
+      return {
+        ok: true,
+        order,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: "Could not load order.",
       };
     }
   }
