@@ -5,10 +5,12 @@ import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 import { User, UserRole } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
 import { CreateOrderInput, CreateOrderOutput } from "./dtos/create-order.dto";
-import { OrderItem } from "./entities/order-item.entity";
-import { Order } from "./entities/order.entity";
-import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
+import { EditOrderInput, EditOrderOutput } from "./dtos/edit-order.dto";
 import { GetOrderInput, GetOrderOutput } from "./dtos/get-order.dto";
+import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
+import { OrderItem } from "./entities/order-item.entity";
+import { Order, OrderStatus } from "./entities/order.entity";
+import { clearLine } from "readline";
 
 @Injectable()
 export class OrderService {
@@ -172,23 +174,18 @@ export class OrderService {
   }
 
   canSeeOrder(user: User, order: Order): boolean {
-    let isMatch = false;
-
     switch (user.role) {
       case UserRole.Client:
-        isMatch = order.customerId === user.id;
-        return isMatch;
+        return order.customerId === user.id;
 
       case UserRole.Delivery:
-        isMatch = order.driverId === user.id;
-        return isMatch;
+        return order.driverId === user.id;
 
       case UserRole.Owner:
-        isMatch = order.restaurant.ownerId === user.id;
-        return isMatch;
+        return order.restaurant.ownerId === user.id;
 
       default:
-        isMatch = false;
+        return false;
     }
   }
 
@@ -209,13 +206,14 @@ export class OrderService {
         };
       }
 
-      const isOrderNotViewable = !this.canSeeOrder(user, order);
-      if (isOrderNotViewable) {
+      const canSeeOrder = this.canSeeOrder(user, order);
+      if (!canSeeOrder) {
         return {
           ok: false,
           error: "Can't see this.",
         };
       }
+
       return {
         ok: true,
         order,
@@ -224,6 +222,77 @@ export class OrderService {
       return {
         ok: false,
         error: "Could not load order.",
+      };
+    }
+  }
+
+  canEditOrder(user: User, status: OrderStatus): boolean {
+    if (UserRole.Owner === user.role) {
+      switch (status) {
+        case OrderStatus.Cooking:
+        case OrderStatus.Cooked:
+          return true;
+
+        default:
+          return false;
+      }
+    }
+
+    if (UserRole.Delivery === user.role) {
+      switch (status) {
+        case OrderStatus.PickedUp:
+        case OrderStatus.Delivered:
+          return true;
+
+        default:
+          return false;
+      }
+    }
+
+    return false;
+  }
+
+  async editOrder(
+    user: User,
+    { id: orderId, status }: EditOrderInput,
+  ): Promise<EditOrderOutput> {
+    try {
+      const order = await this.orders.findOne({ where: { id: orderId } });
+      if (!order) {
+        return {
+          ok: false,
+          error: "Order not found.",
+        };
+      }
+
+      const canSeeOrder = this.canSeeOrder(user, order);
+      if (!canSeeOrder) {
+        return {
+          ok: false,
+          error: "Can't see this.",
+        };
+      }
+
+      const editOrder = this.canEditOrder(user, status);
+      if (!editOrder) {
+        return {
+          ok: false,
+          error: "You can't do that.",
+        };
+      }
+
+      await this.orders.save({
+        id: orderId,
+        status,
+      });
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: "Could not edit order.",
       };
     }
   }
