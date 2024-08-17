@@ -70,22 +70,34 @@ import { Context } from "graphql-ws";
       driver: ApolloDriver,
       autoSchemaFile: true,
       subscriptions: {
-        //🚨주의사항1:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
-        // playground 대신 Altair Graphql 사용할 것
-        "graphql-ws": {
-          onConnect: (context: any) => {
-            const { connectionParams, extra } = context;
-            extra.token = connectionParams["x-jwt"];
+        // ! "graphql-ws" 사용을 권장
+        // "subscriptions-transport-ws" 오래된 웹소켓 프로토콜이다.
+        "subscriptions-transport-ws": {
+          onConnect: (connectionParams) => {
+            return { token: connectionParams["X-JWT"] };
           },
         },
       },
-      context: ({ req, extra }) => {
-        if (req) {
-          return { user: req["user"] };
-        } else {
-          console.log(extra);
-        }
+      context: ({ req }) => {
+        const TOKEN_KEY = "x-jwt";
+        return { token: req.headers[TOKEN_KEY] };
       },
+
+      // "graphql-ws" context 파라미터가 오지 않음
+      // subscriptions: {
+      //   //🚨주의사항1:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
+      //   // playground 대신 Altair Graphql 사용할
+      //   "graphql-ws": {
+      //     onConnect: (context: any) => {
+      //       const { connectionParams, extra } = context;
+      //       extra.token = connectionParams["x-jwt"];
+      //     },
+      //   },
+      // },
+      // context: ({ req, extra }) => {
+      //   return { token: req ? req.headers["x-jwt"] : extra.token };
+      // },
+      // }),
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
