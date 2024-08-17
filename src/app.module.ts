@@ -23,6 +23,7 @@ import { RestaurantModule } from "./restaurant/restaurant.module";
 import { User } from "./user/entities/user.entity";
 import { Verification } from "./user/entities/verification.entity";
 import { UserModule } from "./user/user.module";
+import { Context } from "graphql-ws";
 
 @Module({
   imports: [
@@ -68,7 +69,23 @@ import { UserModule } from "./user/user.module";
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
-      context: ({ req }) => ({ user: req["user"] }),
+      subscriptions: {
+        //🚨주의사항1:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
+        // playground 대신 Altair Graphql 사용할 것
+        "graphql-ws": {
+          onConnect: (context: any) => {
+            const { connectionParams, extra } = context;
+            extra.token = connectionParams["x-jwt"];
+          },
+        },
+      },
+      context: ({ req, extra }) => {
+        if (req) {
+          return { user: req["user"] };
+        } else {
+          console.log(extra);
+        }
+      },
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,

@@ -32,6 +32,26 @@ http://localhost:3000/graphql
 
 <br/><br/>
 
+# Role
+
+Owner
+
+- 사용자, 레스토랑 리스트 목록이 보인다.
+- 레스토랑 생성, 수정, 삭제
+- 주문 내역 변경은 요리 중, 요리 완료만 가능하다.
+
+Client
+
+- 레스토랑 등록한 사장, 대시보드가 보인다.
+- 주문 내역을 변경할 수 없다.
+
+Delivery
+
+- 배달원, 현재 갈 수 있는 모든 주문의 실시간
+- 주문 내역 변경은 픽업 중, 픽업 완료만 가능하다.
+
+<br/><br/>
+
 # 프로젝트 구조
 
 ```javascript
@@ -56,12 +76,38 @@ src/
 │   ├── mail.interfaces.ts
 │   ├── mail.module.ts
 │   └── mail.service.ts
+├── order/
+│   ├── dtos/
+│   │   ├── create-order.dto.ts
+│   │   ├── edit-order.dto.ts
+│   │   ├── get-order.dto.ts
+│   │   ├── get-orders.dto.ts
+│   │   ├── order-updates.dto.ts
+│   │   ├── take-order.dto.ts
+│   ├── entities/
+│   │   ├── order-item.entity.ts
+│   │   ├── order.entity.ts
+│   ├── order.module.ts
+│   ├── order.resolver.ts
+│   └── order.service.ts
 ├── restaurant/
 │   ├── dtos/
+│   │   ├── all-categories.dto.ts
+│   │   ├── category.dto.ts
+│   │   ├── create-dish.dto.ts
 │   │   ├── create-restaurant.dto.ts
-│   │   ├── update-restaurant.dto.ts
+│   │   ├── delete-dish.dto.ts
+│   │   ├── delete-restaurant.dto.ts
+│   │   ├── edit-dish.dto.ts
+│   │   ├── edit-restaurant.dto.ts
+│   │   ├── my-restaurant.ts
+│   │   ├── my-restaurants.dto.ts
+│   │   ├── restaurant.dto.ts
+│   │   ├── restaurants.dto.ts
+│   │   ├── search-restaurant.dto.ts
 │   ├── entities/
 │   │   ├── category.entity.ts
+│   │   ├── dish.entity.ts
 │   │   ├── restaurant.entity.ts
 │   ├── restaurant.module.ts
 │   ├── restaurant.resolver.ts
@@ -84,25 +130,3 @@ src/
 ```
 
 <br/><br/>
-
-# User Entity
-
-- id
-- createAt
-- updateAt
-
-<br/><br/>
-
-- email
-- password
-- role (client | owner | delivery)
-  - client : 사용자, 레스토랑 리스트 목록이 보인다.
-  - owner : 레스토랑 등록한 사장, 대시보드가 보인다.
-  - delivery : 배달원, 현재 갈 수 있는 모든 주문의 실시간 상황이 보인다.
-    <br/><br/>
-
-# Role
-
-Owner
-
-- 레스토랑 생성, 수정, 삭제
