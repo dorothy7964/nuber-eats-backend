@@ -74,7 +74,8 @@ import { Context } from "graphql-ws";
         // "subscriptions-transport-ws" 오래된 웹소켓 프로토콜이다.
         "subscriptions-transport-ws": {
           onConnect: (connectionParams) => {
-            return { token: connectionParams["X-JWT"] };
+            const TOKEN_KEY = "X-JWT";
+            return { token: connectionParams[TOKEN_KEY] };
           },
         },
       },
@@ -82,7 +83,6 @@ import { Context } from "graphql-ws";
         const TOKEN_KEY = "x-jwt";
         return { token: req.headers[TOKEN_KEY] };
       },
-
       // "graphql-ws" context 파라미터가 오지 않음
       // subscriptions: {
       //   //🚨주의사항1:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
@@ -115,11 +115,4 @@ import { Context } from "graphql-ws";
     OrderModule,
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes({
-      path: "/graphql",
-      method: RequestMethod.POST,
-    });
-  }
-}
+export class AppModule {}

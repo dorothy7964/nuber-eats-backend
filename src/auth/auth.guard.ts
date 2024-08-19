@@ -1,51 +1,61 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
-import { Observable } from "rxjs";
+import { JwtService } from "src/jwt/jwt.service";
+import { UserService } from "src/user/user.service";
 import { AllowedRoles } from "./role.decorator";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly userService: UserService,
+    private readonly reflector: Reflector,
+  ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const ctx = GqlExecutionContext.create(context); // GraphQL 컨텍스트로 변환
-    const { token } = ctx.getContext();
-    console.log("📢📢📢 [auth.guard.ts:19] Token:", token);
-
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const roles = this.reflector.get<AllowedRoles>(
       "roles",
       context.getHandler(),
     );
-    const PUBLIC_USER = !roles;
-    if (PUBLIC_USER) {
+
+    // @Role 데코레이터가 정의되지 않은 경우, 접근 허용
+    if (!roles) {
       return true;
     }
+
     const gqlContext = GqlExecutionContext.create(context).getContext();
-    const { user } = gqlContext["user"];
-    if (!user) {
+    const { token } = gqlContext;
+
+    if (!token) {
       return false;
     }
 
-    const USER_ROLE_ALL = roles.includes("Any");
-    if (USER_ROLE_ALL) {
-      return true;
+    try {
+      // jwt 인증 처리
+      const decoded = this.jwtService.verify(token.toString());
+
+      if (typeof decoded === "object" && decoded.hasOwnProperty("id")) {
+        const { user } = await this.userService.findById(decoded["id"]);
+        if (!user) {
+          return false;
+        }
+        // 유저 정보 저장
+        gqlContext["user"] = user;
+
+        // @Role에 "Any"가 포함된 경우, 모든 사용자 접근 허용
+        if (roles.includes("Any")) {
+          return true;
+        }
+
+        // 유저의 역할이 @Role에 포함되어 있는지 확인
+        return roles.includes(user.role);
+      }
+    } catch (e) {
+      console.log(e);
+      return false;
     }
 
-    const isRoleMatching = roles.includes(user.role);
-
-    if (!isRoleMatching) {
-      throw new UnauthorizedException(
-        "You are not authorized to access this feature.",
-      );
-    }
-    return true;
+    return false;
   }
 }

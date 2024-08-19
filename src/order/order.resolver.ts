@@ -60,6 +60,7 @@ export class OrderResolver {
   }
 
   @Subscription(() => String)
+  @Role(["Any"])
   orderSubscription() {
     return pubsub.asyncIterator("orderTest");
   }
