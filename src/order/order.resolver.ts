@@ -57,14 +57,20 @@ export class OrderResolver {
   }
 
   @Mutation(() => Boolean)
-  ReadyTest() {
-    this.pubSub.publish("orderTest", { orderSubscription: "구독 테스트 중" });
+  async ReadyTest(@Args("subId") subId: number) {
+    await this.pubSub.publish("orderTest", {
+      orderSubscription: subId,
+    });
     return true;
   }
 
-  @Subscription(() => String)
+  @Subscription(() => String, {
+    filter: ({ orderSubscription }, { subId }) => {
+      return orderSubscription === subId;
+    },
+  })
   @Role(["Any"])
-  orderSubscription() {
+  orderSubscription(@Args("subId") subId: number) {
     return this.pubSub.asyncIterator("orderTest");
   }
 }
