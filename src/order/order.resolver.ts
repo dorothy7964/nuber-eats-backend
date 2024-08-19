@@ -1,20 +1,23 @@
+import { Inject } from "@nestjs/common";
 import { Args, Mutation, Query, Resolver, Subscription } from "@nestjs/graphql";
+import { PubSub } from "graphql-subscriptions";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { Role } from "src/auth/role.decorator";
+import { PUB_SUB } from "src/common/common.constants";
 import { User } from "src/user/entities/user.entity";
 import { CreateOrderInput, CreateOrderOutput } from "./dtos/create-order.dto";
+import { EditOrderInput, EditOrderOutput } from "./dtos/edit-order.dto";
+import { GetOrderInput, GetOrderOutput } from "./dtos/get-order.dto";
 import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
 import { Order } from "./entities/order.entity";
 import { OrderService } from "./order.service";
-import { GetOrderInput, GetOrderOutput } from "./dtos/get-order.dto";
-import { EditOrderInput, EditOrderOutput } from "./dtos/edit-order.dto";
-import { PubSub } from "graphql-subscriptions";
-
-const pubsub = new PubSub();
 
 @Resolver(() => Order)
 export class OrderResolver {
-  constructor(private readonly ordersService: OrderService) {}
+  constructor(
+    private readonly ordersService: OrderService,
+    @Inject(PUB_SUB) private readonly pubSub: PubSub,
+  ) {}
 
   @Mutation(() => CreateOrderOutput)
   @Role(["Client"])
@@ -55,13 +58,13 @@ export class OrderResolver {
 
   @Mutation(() => Boolean)
   ReadyTest() {
-    pubsub.publish("orderTest", { orderSubscription: "구독 테스트 중" });
+    this.pubSub.publish("orderTest", { orderSubscription: "구독 테스트 중" });
     return true;
   }
 
   @Subscription(() => String)
   @Role(["Any"])
   orderSubscription() {
-    return pubsub.asyncIterator("orderTest");
+    return this.pubSub.asyncIterator("orderTest");
   }
 }
