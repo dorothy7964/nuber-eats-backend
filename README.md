@@ -32,6 +32,56 @@ http://localhost:3000/graphql
 
 <br/><br/>
 
+# Subscription
+
+## 구독 설정
+
+- "subscriptions-transport-ws" 오래된 웹소켓 프로토콜이다.
+
+- "graphql-ws" 사용을 권장한다.
+  - 현재 파라미터가 전송이 안돼서 사용하고 있지 않음
+
+<br/><br/>
+
+## 구독이 필요한 부분
+
+언제 알림을 publish하고, 누가 subscription을 만들지 알아야 한다.
+
+t: trigger /
+s: subscription
+
+- Pending Orders (Owner)
+
+  - 레스토랑 오너는 대시보드에서 새로 들어오는 주문을 보게된다.
+  - ( s: newOrder ) ( t: createOrder (newOrder))
+  - pending orders resolve가 newOrder 이벤트에 listening 해야 된다는 것
+
+  - createOrder(newOrder)가 trigger 되도록 하기
+
+<br/>
+
+- Order Status (Customer, Owner, Delivery)
+
+  - 유저가 주문을 만들면 화면에서 주문 상태를 볼 수 있다.
+
+  - ( s: orderUpdate ) ( t: editOrder (orderUpdate))
+
+  - order status는 orderUpdate라는 trigger를 listening 하기
+
+  - editOrder라는 resolver로 trigger 되도록 하기
+
+  - editOrder가 order status를 업데이트 할 때마다 orderUpdate를 trigger하기
+
+<br/>
+
+- Pending Pickup Order (Delivery)
+
+  - 주문한 요리가 완료되면 driver에게 픽업할 요리가 있다고 알림을 줘야 한다.
+
+  - ( s: orderUpdate ) ( t: editOrder (orderUpdate))
+
+<br/><br/>
+
 # Role
 
 Owner
