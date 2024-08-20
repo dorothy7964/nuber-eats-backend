@@ -11,7 +11,11 @@ import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
 import { OrderItem } from "./entities/order-item.entity";
 import { Order, OrderStatus } from "./entities/order.entity";
 import { clearLine } from "readline";
-import { NEW_PENDING_ORDER, PUB_SUB } from "src/common/common.constants";
+import {
+  NEW_COOKED_ORDER,
+  NEW_PENDING_ORDER,
+  PUB_SUB,
+} from "src/common/common.constants";
 import { PubSub } from "graphql-subscriptions";
 
 @Injectable()
@@ -293,6 +297,15 @@ export class OrderService {
         id: orderId,
         status,
       });
+
+      const newOrder = { ...order, status };
+      if (UserRole.Owner === user.role) {
+        if (OrderStatus.Cooked === status) {
+          await this.pubSub.publish(NEW_COOKED_ORDER, {
+            cookedOrders: newOrder,
+          });
+        }
+      }
 
       return {
         ok: true,
