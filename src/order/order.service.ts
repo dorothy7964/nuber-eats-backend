@@ -13,10 +13,12 @@ import { Order, OrderStatus } from "./entities/order.entity";
 import { clearLine } from "readline";
 import {
   NEW_COOKED_ORDER,
+  NEW_ORDER_UPDATE,
   NEW_PENDING_ORDER,
   PUB_SUB,
 } from "src/common/common.constants";
 import { PubSub } from "graphql-subscriptions";
+import { OrderUpdatesInput } from "./dtos/order-updates.dto";
 
 @Injectable()
 export class OrderService {
@@ -307,6 +309,10 @@ export class OrderService {
         }
       }
 
+      await this.pubSub.publish(NEW_ORDER_UPDATE, {
+        orderUpdates: newOrder,
+      });
+
       return {
         ok: true,
       };
@@ -316,5 +322,27 @@ export class OrderService {
         error: "Could not edit order.",
       };
     }
+  }
+
+  async orderUpdatesUserCheck(user: User, { id: orderId }: OrderUpdatesInput) {
+    const order = await this.orders.findOne({ where: { id: orderId } });
+    if (!order) {
+      return {
+        ok: false,
+        error: "Order not found",
+      };
+    }
+    // 사용자가 특정 주문 업데이트를 구독할 수 있는지 검증 (사용자가 특정 주문 업데이트를 구독할 수 있는지 검증)
+    const canSeeOrder = await this.canSeeOrder(user, order);
+    if (!canSeeOrder) {
+      return {
+        ok: false,
+        error: "Unauthorized access to the order updates",
+      };
+    }
+
+    return {
+      ok: true,
+    };
   }
 }
