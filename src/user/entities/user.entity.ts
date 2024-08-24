@@ -9,6 +9,7 @@ import * as bcrypt from "bcrypt";
 import { IsBoolean, IsEnum, IsString } from "class-validator";
 import { CoreEntity } from "src/common/entities/core.entity";
 import { Order } from "src/order/entities/order.entity";
+import { Payment } from "src/payment/entities/payment.entity";
 import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from "typeorm";
 
@@ -51,6 +52,10 @@ export class User extends CoreEntity {
   @Field(() => [Order])
   @OneToMany(() => Order, (order) => order.customer)
   orders: Order[];
+
+  @Field(() => [Payment])
+  @OneToMany(() => Payment, (payment) => payment.user, { eager: true })
+  payments: Payment[];
 
   @Field(() => [Order])
   @OneToMany(() => Order, (order) => order.driver)

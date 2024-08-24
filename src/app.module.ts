@@ -18,6 +18,8 @@ import { User } from "./user/entities/user.entity";
 import { Verification } from "./user/entities/verification.entity";
 import { UserModule } from "./user/user.module";
 import { CommonModule } from "./common/common.module";
+import { PaymentModule } from "./payment/payment.module";
+import { Payment } from "./payment/entities/payment.entity";
 
 @Module({
   imports: [
@@ -58,6 +60,7 @@ import { CommonModule } from "./common/common.module";
         Order,
         OrderItem,
         OrderItemOption,
+        Payment,
       ],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -108,6 +111,7 @@ import { CommonModule } from "./common/common.module";
     RestaurantModule,
     OrderModule,
     CommonModule,
+    PaymentModule,
   ],
 })
 export class AppModule {}
