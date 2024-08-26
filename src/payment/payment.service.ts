@@ -52,6 +52,13 @@ export class PaymentService {
         }),
       );
 
+      restaurant.isPromoted = true;
+      const date = new Date();
+      const daysToAdd = 7;
+      date.setDate(date.getDate() + daysToAdd);
+      restaurant.promotedUntil = date;
+      this.restaurant.save(restaurant);
+
       return {
         ok: true,
       };
@@ -79,15 +86,5 @@ export class PaymentService {
         error: "Could not load payments.",
       };
     }
-  }
-
-  @Cron("10 * * * * *", {
-    name: "myJob",
-  })
-  checkCron() {
-    console.log("📢Checking...");
-    const job = this.schedulerRegistry.getCronJob("myJob");
-    job.stop();
-    console.log(job.lastDate());
   }
 }

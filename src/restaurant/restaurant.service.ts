@@ -207,15 +207,16 @@ export class RestaurantService {
 
   async allRestaurants({ page }: RestaurantsInput): Promise<RestaurantsOutput> {
     try {
-      const PAGE_LIMIT: number = 3;
-
       const [restaurants, totalResults] =
-        await this.restaurantRepository.findAllPaginated(page, PAGE_LIMIT);
+        await this.restaurantRepository.findAllPaginated(
+          page,
+          DEFAULT_PAGE_LIMIT,
+        );
 
       return {
         ok: true,
         results: restaurants,
-        totalPages: Math.ceil(totalResults / PAGE_LIMIT),
+        totalPages: Math.ceil(totalResults / DEFAULT_PAGE_LIMIT),
         totalResults,
       };
     } catch {

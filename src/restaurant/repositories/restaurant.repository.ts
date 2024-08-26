@@ -33,6 +33,9 @@ export class RestaurantRepository {
     return this.restaurant.findAndCount({
       skip: (page - 1) * take,
       take,
+      order: {
+        isPromoted: "DESC",
+      },
     });
   }
 
@@ -44,6 +47,9 @@ export class RestaurantRepository {
     return this.restaurant.findAndCount({
       where: {
         category: { id: categoryId },
+      },
+      order: {
+        isPromoted: "DESC",
       },
       skip: (page - 1) * takes,
       take: takes,
