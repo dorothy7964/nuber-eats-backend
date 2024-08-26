@@ -26,6 +26,40 @@
 
 <br/><br/>
 
+#  Task Scheduling 
+
+```javascript
+npm install --save @nestjs/schedule
+```
+
+- 원하는 time interval, 또는 정해진 시간과 날짜에 fuction을 실행할 수 있다.
+
+<br/><br/>
+
+### cron pattern
+
+```javascript
+* * * * * *
+| | | | | |
+| | | | | day of week
+| | | | months
+| | | day of month
+| | hours
+| minutes
+seconds (optional)
+```
+
+- Asterisk (e.g. `*`)
+
+  - 별표시는 “매” 즉 “모든” 것을 포함한 의미 이다.
+
+- Ranges (e.g. `1-3,5`)
+  - Range는 1-3 또는 1과 5를 의미
+- Steps (e.g. `*/2`)
+  - 2씩 간격을 의
+
+<br/><br/>
+
 # Playground
 
 http://localhost:3000/graphql

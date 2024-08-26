@@ -1,14 +1,15 @@
 import { Injectable } from "@nestjs/common";
+import { Cron, SchedulerRegistry, Timeout } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Payment } from "./entities/payment.entity";
-import { Repository } from "typeorm";
+import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 import { User } from "src/user/entities/user.entity";
+import { Repository } from "typeorm";
 import {
   CreatePaymentInput,
   CreatePaymentOuput,
 } from "./dtos/create-payment.dto";
-import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 import { GetPaymentsOutput } from "./dtos/get-payments.dto";
+import { Payment } from "./entities/payment.entity";
 
 @Injectable()
 export class PaymentService {
@@ -17,6 +18,7 @@ export class PaymentService {
     private readonly payment: Repository<Payment>,
     @InjectRepository(Restaurant)
     private readonly restaurant: Repository<Restaurant>,
+    private schedulerRegistry: SchedulerRegistry,
   ) {}
 
   async createPayment(
@@ -77,5 +79,15 @@ export class PaymentService {
         error: "Could not load payments.",
       };
     }
+  }
+
+  @Cron("10 * * * * *", {
+    name: "myJob",
+  })
+  checkCron() {
+    console.log("📢Checking...");
+    const job = this.schedulerRegistry.getCronJob("myJob");
+    job.stop();
+    console.log(job.lastDate());
   }
 }

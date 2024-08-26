@@ -20,6 +20,7 @@ import { UserModule } from "./user/user.module";
 import { CommonModule } from "./common/common.module";
 import { PaymentModule } from "./payment/payment.module";
 import { Payment } from "./payment/entities/payment.entity";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
@@ -96,6 +97,7 @@ import { Payment } from "./payment/entities/payment.entity";
       // },
       // }),
     }),
+    ScheduleModule.forRoot(),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
