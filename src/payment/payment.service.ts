@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Cron, SchedulerRegistry, Timeout } from "@nestjs/schedule";
+import { SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 import { User } from "src/user/entities/user.entity";
-import { Repository } from "typeorm";
+import { LessThan, Repository } from "typeorm";
 import {
   CreatePaymentInput,
   CreatePaymentOuput,
@@ -86,5 +86,21 @@ export class PaymentService {
         error: "Could not load payments.",
       };
     }
+  }
+
+  async checkPromotedRestaurants() {
+    const restaurants = await this.restaurant.find({
+      where: {
+        isPromoted: true,
+        promotedUntil: LessThan(new Date()),
+      },
+    });
+
+    // 만료 날짜 데이터 초기화
+    restaurants.forEach(async (restaurant) => {
+      restaurant.isPromoted = false;
+      restaurant.promotedUntil = null;
+      await this.restaurant.save(restaurant);
+    });
   }
 }
