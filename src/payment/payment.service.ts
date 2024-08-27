@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { SchedulerRegistry } from "@nestjs/schedule";
+import { Cron, SchedulerRegistry } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 import { User } from "src/user/entities/user.entity";
@@ -88,6 +88,7 @@ export class PaymentService {
     }
   }
 
+  @Cron("0 0 * * *")
   async checkPromotedRestaurants() {
     const restaurants = await this.restaurant.find({
       where: {
