@@ -2,11 +2,13 @@ import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { Dish } from "src/restaurant/entities/dish.entity";
 import { Restaurant } from "src/restaurant/entities/restaurant.entity";
-import { User } from "src/user/entities/user.entity";
+import { User, UserRole } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
 import { OrderItem } from "./entities/order-item.entity";
-import { Order } from "./entities/order.entity";
+import { Order, OrderStatus } from "./entities/order.entity";
 import { OrderService } from "./order.service";
+import { PUB_SUB } from "src/common/common.constants";
+import { PubSub } from "graphql-subscriptions";
 
 const mockRepository = () => ({
   create: jest.fn(),
@@ -14,6 +16,10 @@ const mockRepository = () => ({
   delete: jest.fn(),
   findOne: jest.fn(),
   find: jest.fn(),
+});
+
+const mockPubsub = () => ({
+  publish: jest.fn(),
 });
 
 type MockRepository<T = any> = Partial<Record<keyof Repository<T>, jest.Mock>>;
@@ -24,6 +30,7 @@ describe("OrderService", () => {
   let orderItemsRepository: MockRepository<OrderItem>;
   let restaurantsRepository: MockRepository<Restaurant>;
   let dishesRepository: MockRepository<Dish>;
+  let pubsub: PubSub;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -48,6 +55,11 @@ describe("OrderService", () => {
           // Dish Repository
           provide: getRepositoryToken(Dish),
           useValue: mockRepository(),
+        },
+        {
+          // PubSub Repository
+          provide: PUB_SUB,
+          useValue: mockPubsub(),
         },
       ],
     }).compile();
@@ -331,6 +343,121 @@ describe("OrderService", () => {
       expect(result).toEqual({
         ok: false,
         error: "주문을 만들 수 없습니다.",
+      });
+    });
+  });
+
+  describe("getOrders", () => {
+    it("사용자가 클라이언트일 때 올바르게 주문을 가져와야 합니다.", async () => {
+      const mockUser = { id: 1, role: UserRole.Client } as User;
+      const mockOrders = [{ id: 1 }, { id: 2 }];
+
+      ordersRepository.find.mockResolvedValue(mockOrders);
+
+      const result = await service.getOrders(mockUser, {
+        status: OrderStatus.Pending,
+      });
+
+      expect(ordersRepository.find).toHaveBeenCalledWith({
+        where: {
+          customer: { id: mockUser.id },
+          status: "Pending",
+        },
+      });
+
+      expect(result).toEqual({
+        ok: true,
+        orders: mockOrders,
+      });
+    });
+
+    it("사용자가 배달원일 때 올바르게 주문을 가져와야 합니다.", async () => {
+      const mockUser = { id: 2, role: UserRole.Delivery } as User;
+      const mockOrders = [{ id: 3 }, { id: 4 }];
+
+      ordersRepository.find.mockResolvedValue(mockOrders);
+
+      const result = await service.getOrders(mockUser, {
+        status: OrderStatus.PickedUp,
+      });
+
+      expect(ordersRepository.find).toHaveBeenCalledWith({
+        where: {
+          driver: { id: mockUser.id },
+          status: "PickedUp",
+        },
+      });
+
+      expect(result).toEqual({
+        ok: true,
+        orders: mockOrders,
+      });
+    });
+
+    it("사용자가 식당 주인일 때 올바르게 주문을 가져와야 합니다.", async () => {
+      const mockUser = { id: 3, role: UserRole.Owner } as User;
+      const mockRestaurants = [
+        {
+          id: 1,
+          orders: [
+            { id: 5, status: "Pending" },
+            { id: 6, status: "Completed" },
+          ],
+        },
+        { id: 2, orders: [{ id: 7, status: "Pending" }] },
+      ];
+
+      restaurantsRepository.find.mockResolvedValue(mockRestaurants);
+
+      const result = await service.getOrders(mockUser, {
+        status: OrderStatus.Pending,
+      });
+
+      expect(restaurantsRepository.find).toHaveBeenCalledWith({
+        where: { owner: { id: mockUser.id } },
+        relations: ["orders"],
+      });
+
+      expect(result).toEqual({
+        ok: true,
+        orders: [
+          { id: 5, status: "Pending" },
+          { id: 7, status: "Pending" },
+        ],
+      });
+    });
+
+    it("잘못된 역할을 가진 사용자는 에러를 반환해야 합니다.", async () => {
+      const invalidRole = "InvalidRole" as UserRole;
+
+      const mockUser = { id: 4, role: invalidRole } as User;
+
+      const result = await service.getOrders(mockUser, {
+        status: OrderStatus.Pending,
+      });
+
+      // ordersRepository.find와 restaurantsRepository.find가 호출되지 않았는지 확인
+      expect(ordersRepository.find).not.toHaveBeenCalled();
+      expect(restaurantsRepository.find).not.toHaveBeenCalled();
+
+      expect(result).toEqual({
+        ok: false,
+        error: "역할을 찾을 수 없습니다.",
+      });
+    });
+
+    it("주문을 가져오는 중 에러가 발생하면 에러 메시지를 반환해야 합니다.", async () => {
+      const mockUser = { id: 5, role: UserRole.Owner } as User;
+
+      ordersRepository.findOne.mockRejectedValue(new Error());
+
+      const result = await service.getOrders(mockUser, {
+        status: OrderStatus.Cooking,
+      });
+
+      expect(result).toEqual({
+        ok: false,
+        error: "주문을 받을 수 없습니다.",
       });
     });
   });

@@ -60,7 +60,7 @@ export class OrderService {
         if (!dish) {
           return {
             ok: false,
-            error: "요리를 찾을 수 없습니다.",
+            error: "주문한 음식을 찾을 수 없습니다.",
           };
         }
 
