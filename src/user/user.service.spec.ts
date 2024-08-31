@@ -68,7 +68,7 @@ describe("UserService", () => {
     verificationRepository = module.get(getRepositoryToken(Verification));
   });
 
-  it("should be defined", () => {
+  it("UserService를 정의합니다.", () => {
     expect(service).toBeDefined();
   });
 
@@ -79,7 +79,7 @@ describe("UserService", () => {
       role: UserRole.Client,
     };
 
-    it("should fail if user exists", async () => {
+    it("사용자가 있는 경우 새 유저 생성에 실패합니다.", async () => {
       userRepository.findOne.mockResolvedValue({
         id: 1,
         email: "test@mail.com",
@@ -91,7 +91,7 @@ describe("UserService", () => {
       });
     });
 
-    it("should create a new user", async () => {
+    it("새 유저를 만듭니다.", async () => {
       userRepository.findOne.mockResolvedValue(undefined);
       userRepository.create.mockReturnValue(createAccountArgs);
       userRepository.save.mockReturnValue(createAccountArgs);
@@ -128,7 +128,7 @@ describe("UserService", () => {
       expect(result).toEqual({ ok: true });
     });
 
-    it("should fail on exception", async () => {
+    it("예외가 발생했다면 새 유저 생성에 실패합니다.", async () => {
       userRepository.findOne.mockRejectedValue(new Error());
       const result = await service.createAccount(createAccountArgs);
       expect(result).toEqual({
@@ -144,7 +144,7 @@ describe("UserService", () => {
       password: "password",
     };
 
-    it("should fail if user does not exist", async () => {
+    it("유저가 존재하지 않을 경우에 로그인에 실패합니다.", async () => {
       // findOne의 리턴 값을 false로 mock 하기
       userRepository.findOne.mockResolvedValue(null);
 
@@ -158,7 +158,7 @@ describe("UserService", () => {
       });
     });
 
-    it("should fail if the password is wrong", async () => {
+    it("비밀번호가 일치하지 않을 경우에 로그인에 실패합니다.", async () => {
       const mockedUser = {
         checkPassword: jest.fn(() => Promise.resolve(false)),
       };
@@ -167,7 +167,7 @@ describe("UserService", () => {
       expect(result).toEqual({ ok: false, error: "암호가 잘못되었습니다." });
     });
 
-    it("should return token if password correct", async () => {
+    it("비밀번호가 일치할 경우에 TOKEN을 반환합니다.", async () => {
       const mockedUser = {
         id: 1,
         checkPassword: jest.fn(() => Promise.resolve(true)),
@@ -179,7 +179,7 @@ describe("UserService", () => {
       expect(result).toEqual({ ok: true, token: "signed-token" });
     });
 
-    it("should fail on exception", async () => {
+    it("예외가 발생했다면 로그인에 실패합니다.", async () => {
       userRepository.findOne.mockRejectedValue(new Error());
       const result = await service.login(loginArgs);
       expect(result).toEqual({
@@ -193,13 +193,13 @@ describe("UserService", () => {
     const findByIdArgs = {
       id: 1,
     };
-    it("should find an existing user", async () => {
+    it("존재하는 유저를 찾습니다.", async () => {
       userRepository.findOneOrFail.mockResolvedValue(findByIdArgs);
       const result = await service.findById(findByIdArgs.id);
       expect(result).toEqual({ ok: true, user: findByIdArgs });
     });
 
-    it("should fail if no user is found", async () => {
+    it("유저를 찾는데 실패합니다.", async () => {
       userRepository.findOneOrFail.mockRejectedValue(new Error());
       const result = await service.findById(findByIdArgs.id);
       expect(result).toEqual({
@@ -210,7 +210,7 @@ describe("UserService", () => {
   });
 
   describe("editProfile", () => {
-    it("should not change email if it is already in use", async () => {
+    it("중복된 이메일이 있어 이메일 변경에 실패합니다.", async () => {
       const userId = 1;
       const newEmail = "wow@new.com";
 
@@ -245,7 +245,7 @@ describe("UserService", () => {
       });
     });
 
-    it("should change email", async () => {
+    it("이메일을 변경합니다.", async () => {
       const userId = 1;
       const newEmail = "wow@new.com";
 
@@ -301,7 +301,7 @@ describe("UserService", () => {
       );
     });
 
-    it("should change password", async () => {
+    it("비밀번호를 변경합니다.", async () => {
       const userId = 1;
       const prevPassword = "wow@prev.com";
       const newPassword = "wow@new.com";
@@ -320,7 +320,7 @@ describe("UserService", () => {
       expect(result).toEqual({ ok: true });
     });
 
-    it("should fail on exception", async () => {
+    it("예외가 발생했다면 프로필 업데이트에 실패합니다.", async () => {
       const userId = 1;
       userRepository.findOneOrFail.mockRejectedValue(new Error());
       const result = await service.editProfile(userId, { email: "fail" });
@@ -332,7 +332,7 @@ describe("UserService", () => {
   });
 
   describe("verifyEmail", () => {
-    it("should verify email", async () => {
+    it("이메일 인증에 성공합니다.", async () => {
       const mockedVerification = {
         user: {
           verified: false,
@@ -360,7 +360,7 @@ describe("UserService", () => {
       expect(result).toEqual({ ok: true });
     });
 
-    it("should fail on verification not found", async () => {
+    it("인증 코드가 유효하지 않다면 인증에 실패합니다.", async () => {
       verificationRepository.findOne.mockResolvedValue(undefined);
       const result = await service.verifyEmail("wrong-code");
       expect(result).toEqual({
@@ -369,7 +369,7 @@ describe("UserService", () => {
       });
     });
 
-    it("should fail on exception", async () => {
+    it("예외가 발생했다면 인증에 실패합니다.", async () => {
       verificationRepository.findOne.mockRejectedValue(new Error());
       const result = await service.verifyEmail("wrong-code");
       expect(result).toEqual({

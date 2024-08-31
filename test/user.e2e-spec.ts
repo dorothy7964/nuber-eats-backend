@@ -65,7 +65,7 @@ describe("UserModule (e2e)", () => {
   describe("createAccount", () => {
     const QUERY = createAccountMutation(TEST_USER.email, TEST_USER.password);
 
-    it("should create account", () => {
+    it("계정을 생성합니다.", () => {
       return publicTest(QUERY)
         .expect(200)
         .expect((res) => {
@@ -75,7 +75,7 @@ describe("UserModule (e2e)", () => {
         });
     });
 
-    it("should fail if account already exists", () => {
+    it("입력받은 이메일이 이미 존재한다면 계정 생성에 실패합니다.", () => {
       return publicTest(QUERY)
         .expect(200)
         .expect((res) => {
@@ -92,7 +92,7 @@ describe("UserModule (e2e)", () => {
     const QUERY = loginMutation(TEST_USER.email, TEST_USER.password);
     const FAIL_QUERY = loginMutation(TEST_USER.email, WRONG_PASSWORD);
 
-    it("should login with correct credentials", () => {
+    it("정상적인 방법으로 로그인합니다.", () => {
       return publicTest(QUERY)
         .expect(200)
         .expect((res) => {
@@ -104,7 +104,7 @@ describe("UserModule (e2e)", () => {
         });
     });
 
-    it("should not be able to login with wrong credentials", () => {
+    it("잘못된 방법으로 로그인에 실패합니다.", () => {
       return publicTest(FAIL_QUERY)
         .expect(200)
         .expect((res) => {
@@ -126,7 +126,7 @@ describe("UserModule (e2e)", () => {
 
     const query = (userId: number) => userProfileQuery(userId);
 
-    it("should see a user's profile", () => {
+    it("유저 프로필을 확인합니다.", () => {
       return privateTest(query(userId))
         .expect(200)
         .expect((res) => {
@@ -137,7 +137,7 @@ describe("UserModule (e2e)", () => {
         });
     });
 
-    it("should not find a profile", () => {
+    it("유저 프로필을 찾을 수 없습니다.", () => {
       const WRONG_USER_ID = 9999;
 
       return privateTest(query(WRONG_USER_ID))
@@ -154,7 +154,7 @@ describe("UserModule (e2e)", () => {
   describe("me", () => {
     const QUERY = meQuery();
 
-    it("should find my profile", () => {
+    it("내 프로필 정보를 찾습니다.", () => {
       return privateTest(QUERY)
         .expect(200)
         .expect((res) => {
@@ -163,7 +163,7 @@ describe("UserModule (e2e)", () => {
         });
     });
 
-    it("should not allow logged out user", () => {
+    it("로그인 정보가 없을 경우 프로필 정보를 받아올 수 없습니다.", () => {
       return publicTest(QUERY)
         .expect(200)
         .expect((res) => {
@@ -180,7 +180,7 @@ describe("UserModule (e2e)", () => {
     const EDIT_QUERY = editProfileMutation(NEW_EMAIL);
     const CHECK_EDIT_QUERY = meQuery();
 
-    it("should change email", () => {
+    it("이메일을 변경합니다.", () => {
       return privateTest(EDIT_QUERY)
         .expect(200)
         .expect((res) => {
@@ -190,7 +190,7 @@ describe("UserModule (e2e)", () => {
         });
     });
 
-    it("should have new email", () => {
+    it("새 이메일 주소로 변경되었는지 확인합니다.", () => {
       return privateTest(CHECK_EDIT_QUERY)
         .expect(200)
         .expect((res) => {
@@ -211,7 +211,7 @@ describe("UserModule (e2e)", () => {
     const query = (verificationCode: string) =>
       verifyEmailMutation(verificationCode);
 
-    it("should verify email", () => {
+    it("이메일 인증을 진행합니다.", () => {
       return publicTest(query(verificationCode))
         .expect(200)
         .expect((res) => {
@@ -221,7 +221,7 @@ describe("UserModule (e2e)", () => {
         });
     });
 
-    it("should fail on verification code not found", () => {
+    it("잘못된 인증코드를 입력하여 이메일 인증에 실패합니다.", () => {
       const WRONG_CODE = "xxx";
 
       return publicTest(query(WRONG_CODE))

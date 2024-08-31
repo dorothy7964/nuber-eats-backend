@@ -31,13 +31,13 @@ describe("MailService", () => {
     service = module.get<MailService>(MailService);
   });
 
-  it("should be defined", () => {
+  it("MailService를 정의합니다.", () => {
     expect(service).toBeDefined();
   });
 
   // ! 에러 확인
   // describe("sendVerificationEmail", () => {
-  //   it("should call sendEmail", () => {
+  //   it("sendEmail 함수를 실행합니다.", () => {
   //     const sendVerificationEmailArgs = {
   //       email: "email",
   //       code: "code",
@@ -84,7 +84,7 @@ describe("MailService", () => {
       expect(ok).toEqual(true);
     });
 
-    it("fails on error", async () => {
+    it("이메일을 보내는데 실패합니다.", async () => {
       jest.spyOn(FormData.prototype, "append");
       jest
         .spyOn(fetch, "default")

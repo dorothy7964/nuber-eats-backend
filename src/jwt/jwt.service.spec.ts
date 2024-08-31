@@ -30,12 +30,12 @@ describe("JwtService", () => {
     service = module.get<JwtService>(JwtService);
   });
 
-  it("should be defined", () => {
+  it("JwtService를 정의합니다.", () => {
     expect(service).toBeDefined();
   });
 
   describe("sign", () => {
-    it("should return a signed token", () => {
+    it("서명된 토큰을 반환합니다.", () => {
       const token = service.sign(USER_ID);
       expect(typeof token).toBe("string");
       expect(jwt.sign).toHaveBeenCalledTimes(1);
@@ -44,7 +44,7 @@ describe("JwtService", () => {
   });
 
   describe("verify", () => {
-    it("should return the decoded token", () => {
+    it("토큰 안의 내용을 반환합니다.", () => {
       const TOKEN = "TOKEN";
       const decodedToken = service.verify(TOKEN);
       expect(decodedToken).toEqual({ id: USER_ID });

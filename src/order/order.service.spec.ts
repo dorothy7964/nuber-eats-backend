@@ -58,7 +58,7 @@ describe("OrderService", () => {
     dishesRepository = module.get(getRepositoryToken(Dish));
   });
 
-  it("should be defined", () => {
+  it("OrderService를 정의합니다.", () => {
     expect(service).toBeDefined();
   });
 
@@ -113,7 +113,7 @@ describe("OrderService", () => {
       ],
     };
 
-    it("should fail if restaurant is not found", async () => {
+    it("레스토랑이 존재하지 않는 경우 주문을 생성할 수 없습니다.", async () => {
       restaurantsRepository.findOne.mockResolvedValue(null);
 
       const result = await service.createOrder(customer, createOrderArgs);
@@ -128,7 +128,7 @@ describe("OrderService", () => {
       });
     });
 
-    it("should fail if dish is not found", async () => {
+    it("음식이 존재하지 않는 경우 주문을 생성할 수 없습니다.", async () => {
       // 레스토랑이 실제로 데이터베이스에 있는 것이 아니라면,
       // mockResolvedValue({})로 findOne 메서드가 항상 존재하는 레스토랑을 반환하도록 설정
       // 이렇게 하면, 테스트는 레스토랑이 정상적으로 존재한다고 가정하게 된다.
@@ -141,11 +141,14 @@ describe("OrderService", () => {
       expect(dishesRepository.findOne).toHaveBeenCalledWith({
         where: { id: createOrderArgs.items[0].dishId },
       });
-      expect(result).toEqual({ ok: false, error: "요리를 찾을 수 없습니다." });
+      expect(result).toEqual({
+        ok: false,
+        error: "주문한 음식을 찾을 수 없습니다.",
+      });
     });
 
     // 옵션이 없는 경우 기본 가격을 사용
-    it("should use the base price if no options are provided", async () => {
+    it("옵션이 제공되지 않으면 기준 가격을 사용해야 합니다.", async () => {
       const createOrderArgs = {
         restaurantId: 1,
         items: [
@@ -199,7 +202,7 @@ describe("OrderService", () => {
     });
 
     // 추가 비용이 있는 옵션 처리
-    it("should add the extra cost of options to the base price", async () => {
+    it("기본 가격에 옵션 추가 비용을 추가해야 합니다.", async () => {
       const createOrderArgs = {
         restaurantId: 1,
         items: [
@@ -257,7 +260,7 @@ describe("OrderService", () => {
     });
 
     // 선택지에서 추가 비용이 있는 경우 처리
-    it("should add the extra cost of option choices to the base price", async () => {
+    it("기본 가격에 옵션 선택의 추가 비용을 추가해야 합니다.", async () => {
       const createOrderArgs = {
         restaurantId: 1,
         items: [
@@ -321,7 +324,7 @@ describe("OrderService", () => {
       expect(result).toEqual({ ok: true, orderId: 1 });
     });
 
-    it("should fail on exception", async () => {
+    it("예외가 발생한 경우 주문을 생성할 수 없습니다.", async () => {
       restaurantsRepository.findOne.mockRejectedValue(new Error());
 
       const result = await service.createOrder(customer, createOrderArgs);
