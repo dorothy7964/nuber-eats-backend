@@ -32,7 +32,7 @@ export class PaymentService {
       if (!restaurant) {
         return {
           ok: false,
-          error: "Restaurant not found.",
+          error: "레스토랑을 찾을 수 없습니다.",
         };
       }
 
@@ -40,7 +40,7 @@ export class PaymentService {
       if (!restaurantOwner) {
         return {
           ok: false,
-          error: "You are not allowed to do this.",
+          error: "이 작업을 수행할 수 없습니다.",
         };
       }
 
@@ -63,7 +63,7 @@ export class PaymentService {
         ok: true,
       };
     } catch {
-      return { ok: false, error: "Could not create payment." };
+      return { ok: false, error: "결제를 만들 수 없습니다." };
     }
   }
 
@@ -83,7 +83,7 @@ export class PaymentService {
     } catch {
       return {
         ok: false,
-        error: "Could not load payments.",
+        error: "결제를 로드할 수 없습니다.",
       };
     }
   }

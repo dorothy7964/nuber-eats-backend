@@ -60,7 +60,7 @@ export class RestaurantService {
       if (existingRestaurant) {
         return {
           ok: false,
-          error: "A restaurant with that name already exists",
+          error: "해당 이름의 레스토랑이 이미 있습니다.",
         };
       }
       const newRestaurant = this.restaurants.create(createRestaurantInput);
@@ -74,7 +74,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not create restaurant",
+        error: "레스토랑을 만들 수 없습니다.",
       };
     }
   }
@@ -90,7 +90,7 @@ export class RestaurantService {
       if (!restaurant) {
         return {
           ok: false,
-          error: "Restaurant not found",
+          error: "레스토랑을 찾을 수 없습니다.",
         };
       }
       let category: Category = null;
@@ -112,7 +112,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not edit Restaurant",
+        error: "레스토랑을 편집할 수 없습니다.",
       };
     }
   }
@@ -128,7 +128,7 @@ export class RestaurantService {
       if (!restaurant) {
         return {
           ok: false,
-          error: "Restaurant not found",
+          error: "레스토랑을 찾을 수 없습니다.",
         };
       }
 
@@ -136,7 +136,7 @@ export class RestaurantService {
       if (isNotAuthorizedOwner) {
         return {
           ok: false,
-          error: "You can't delete a restaurant that you don't own",
+          error: "소유하지 않은 레스토랑을 삭제할 수 없습니다.",
         };
       }
 
@@ -145,7 +145,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not delete Restaurant",
+        error: "레스토랑을 삭제할 수 없습니다.",
       };
     }
   }
@@ -167,7 +167,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not load categories",
+        error: "카테고리를 로드할 수 없습니다.",
       };
     }
   }
@@ -183,7 +183,7 @@ export class RestaurantService {
       if (!category) {
         return {
           ok: false,
-          error: "Category not found",
+          error: "카테고리를 찾을 수 없습니다.",
         };
       }
 
@@ -200,7 +200,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not load category",
+        error: "카테고리를 로드할 수 없습니다.",
       };
     }
   }
@@ -222,7 +222,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not load restaurants",
+        error: "레스토랑을 로드할 수 없습니다.",
       };
     }
   }
@@ -238,7 +238,7 @@ export class RestaurantService {
       if (!restaurant) {
         return {
           ok: false,
-          error: "Restaurant not found",
+          error: "레스토랑을 찾을 수 없습니다.",
         };
       }
       return {
@@ -248,7 +248,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not find restaurant",
+        error: "레스토랑을 찾을 수 없습니다.",
       };
     }
   }
@@ -268,7 +268,7 @@ export class RestaurantService {
         totalPages: Math.ceil(totalResults / DEFAULT_PAGE_LIMIT),
       };
     } catch {
-      return { ok: false, error: "Could not search for restaurants" };
+      return { ok: false, error: "레스토랑을 검색할 수 없습니다." };
     }
   }
 
@@ -283,7 +283,7 @@ export class RestaurantService {
       if (!restaurant) {
         return {
           ok: false,
-          error: "Restaurant not found",
+          error: "레스토랑을 찾을 수 없습니다.",
         };
       }
       await this.dishes.save(
@@ -296,7 +296,7 @@ export class RestaurantService {
       console.log(error);
       return {
         ok: false,
-        error: "Could not create dish",
+        error: "요리를 만들 수 없습니다.",
       };
     }
   }
@@ -313,7 +313,7 @@ export class RestaurantService {
       if (!dish) {
         return {
           ok: false,
-          error: "Dish not found",
+          error: "요리를 찾을 수 없습니다.",
         };
       }
       await this.dishes.save([
@@ -328,7 +328,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not delete dish",
+        error: "요리를 삭제할 수 없습니다.",
       };
     }
   }
@@ -345,7 +345,7 @@ export class RestaurantService {
       if (!dish) {
         return {
           ok: false,
-          error: "Dish not found",
+          error: "요리를 찾을 수 없습니다.",
         };
       }
       await this.dishes.delete(dishId);
@@ -355,7 +355,7 @@ export class RestaurantService {
     } catch {
       return {
         ok: false,
-        error: "Could not delete dish",
+        error: "요리를 삭제할 수 없습니다.",
       };
     }
   }

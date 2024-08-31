@@ -122,7 +122,10 @@ describe("OrderService", () => {
       expect(restaurantsRepository.findOne).toHaveBeenCalledWith({
         where: { id: createOrderArgs.restaurantId },
       });
-      expect(result).toEqual({ ok: false, error: "Restaurant not found" });
+      expect(result).toEqual({
+        ok: false,
+        error: "레스토랑을 찾을 수 없습니다.",
+      });
     });
 
     it("should fail if dish is not found", async () => {
@@ -138,7 +141,7 @@ describe("OrderService", () => {
       expect(dishesRepository.findOne).toHaveBeenCalledWith({
         where: { id: createOrderArgs.items[0].dishId },
       });
-      expect(result).toEqual({ ok: false, error: "Dish not found." });
+      expect(result).toEqual({ ok: false, error: "요리를 찾을 수 없습니다." });
     });
 
     // 옵션이 없는 경우 기본 가격을 사용
@@ -324,7 +327,7 @@ describe("OrderService", () => {
       const result = await service.createOrder(customer, createOrderArgs);
       expect(result).toEqual({
         ok: false,
-        error: "Could not create order.",
+        error: "주문을 만들 수 없습니다.",
       });
     });
   });

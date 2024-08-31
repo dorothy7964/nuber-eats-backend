@@ -87,7 +87,7 @@ describe("UserService", () => {
       const result = await service.createAccount(createAccountArgs);
       expect(result).toMatchObject({
         ok: false,
-        error: "There is a user with that email already",
+        error: "이미 해당 이메일을 가진 사용자가 있습니다.",
       });
     });
 
@@ -131,7 +131,10 @@ describe("UserService", () => {
     it("should fail on exception", async () => {
       userRepository.findOne.mockRejectedValue(new Error());
       const result = await service.createAccount(createAccountArgs);
-      expect(result).toEqual({ ok: false, error: "Couldn`t create account" });
+      expect(result).toEqual({
+        ok: false,
+        error: "계정을 생성할 수 없습니다.",
+      });
     });
   });
 
@@ -151,7 +154,7 @@ describe("UserService", () => {
       expect(userRepository.findOne).toHaveBeenCalledWith(expect.any(Object));
       expect(result).toEqual({
         ok: false,
-        error: "User not found",
+        error: "사용자를 찾을 수 없습니다.",
       });
     });
 
@@ -161,7 +164,7 @@ describe("UserService", () => {
       };
       userRepository.findOne.mockResolvedValue(mockedUser);
       const result = await service.login(loginArgs);
-      expect(result).toEqual({ ok: false, error: "Wrong password" });
+      expect(result).toEqual({ ok: false, error: "암호가 잘못되었습니다." });
     });
 
     it("should return token if password correct", async () => {
@@ -179,7 +182,10 @@ describe("UserService", () => {
     it("should fail on exception", async () => {
       userRepository.findOne.mockRejectedValue(new Error());
       const result = await service.login(loginArgs);
-      expect(result).toEqual({ ok: false, error: "Can't log user in." });
+      expect(result).toEqual({
+        ok: false,
+        error: "사용자를 로그인 할 수 없습니다.",
+      });
     });
   });
 
@@ -196,7 +202,10 @@ describe("UserService", () => {
     it("should fail if no user is found", async () => {
       userRepository.findOneOrFail.mockRejectedValue(new Error());
       const result = await service.findById(findByIdArgs.id);
-      expect(result).toEqual({ ok: false, error: "User Not Found" });
+      expect(result).toEqual({
+        ok: false,
+        error: "사용자를 찾을 수 없습니다.",
+      });
     });
   });
 
@@ -232,7 +241,7 @@ describe("UserService", () => {
 
       expect(result).toEqual({
         ok: false,
-        error: "Email is already in use.",
+        error: "이메일은 이미 사용 중입니다.",
       });
     });
 
@@ -315,7 +324,10 @@ describe("UserService", () => {
       const userId = 1;
       userRepository.findOneOrFail.mockRejectedValue(new Error());
       const result = await service.editProfile(userId, { email: "fail" });
-      expect(result).toEqual({ ok: false, error: "Could not update profile." });
+      expect(result).toEqual({
+        ok: false,
+        error: "프로필을 업데이트할 수 없습니다.",
+      });
     });
   });
 
@@ -353,14 +365,17 @@ describe("UserService", () => {
       const result = await service.verifyEmail("wrong-code");
       expect(result).toEqual({
         ok: false,
-        error: "Verification not found.",
+        error: "확인 할 수 없습니다.",
       });
     });
 
     it("should fail on exception", async () => {
       verificationRepository.findOne.mockRejectedValue(new Error());
       const result = await service.verifyEmail("wrong-code");
-      expect(result).toEqual({ ok: false, error: "Could not verify email." });
+      expect(result).toEqual({
+        ok: false,
+        error: "이메일을 확인할 수 없습니다.",
+      });
     });
   });
 });

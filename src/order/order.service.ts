@@ -48,7 +48,7 @@ export class OrderService {
       if (!restaurant) {
         return {
           ok: false,
-          error: "Restaurant not found",
+          error: "레스토랑을 찾을 수 없습니다.",
         };
       }
 
@@ -60,7 +60,7 @@ export class OrderService {
         if (!dish) {
           return {
             ok: false,
-            error: "Dish not found.",
+            error: "요리를 찾을 수 없습니다.",
           };
         }
 
@@ -124,7 +124,7 @@ export class OrderService {
     } catch (error) {
       return {
         ok: false,
-        error: "Could not create order.",
+        error: "주문을 만들 수 없습니다.",
       };
     }
   }
@@ -172,7 +172,7 @@ export class OrderService {
         default:
           return {
             ok: false,
-            error: "role not found.",
+            error: "역할을 찾을 수 없습니다.",
           };
       }
 
@@ -183,7 +183,7 @@ export class OrderService {
     } catch (error) {
       return {
         ok: false,
-        error: "Could not get orders",
+        error: "주문을 받을 수 없습니다.",
       };
     }
   }
@@ -217,7 +217,7 @@ export class OrderService {
       if (!order) {
         return {
           ok: false,
-          error: "Order not found.",
+          error: "주문을 찾을 수 없습니다.",
         };
       }
 
@@ -225,7 +225,7 @@ export class OrderService {
       if (!canSeeOrder) {
         return {
           ok: false,
-          error: "Can't see this.",
+          error: "주문서를 볼 수 없습니다.",
         };
       }
 
@@ -236,7 +236,7 @@ export class OrderService {
     } catch (error) {
       return {
         ok: false,
-        error: "Could not load order.",
+        error: "주문을 로드할 수 없습니다.",
       };
     }
   }
@@ -276,7 +276,7 @@ export class OrderService {
       if (!order) {
         return {
           ok: false,
-          error: "Order not found.",
+          error: "주문을 찾을 수 없습니다.",
         };
       }
 
@@ -284,7 +284,7 @@ export class OrderService {
       if (!canSeeOrder) {
         return {
           ok: false,
-          error: "Can't see this.",
+          error: "주문서를 볼 수 없습니다.",
         };
       }
 
@@ -292,7 +292,7 @@ export class OrderService {
       if (!editOrder) {
         return {
           ok: false,
-          error: "You can't do that.",
+          error: "변경을 할 수 없습니다.",
         };
       }
 
@@ -320,7 +320,7 @@ export class OrderService {
     } catch (error) {
       return {
         ok: false,
-        error: "Could not edit order.",
+        error: "주문을 변경할 수 없습니다.",
       };
     }
   }
@@ -330,7 +330,7 @@ export class OrderService {
     if (!order) {
       return {
         ok: false,
-        error: "Order not found",
+        error: "주문을 찾을 수 없습니다.",
       };
     }
     // 사용자가 특정 주문 업데이트를 구독할 수 있는지 검증 (사용자가 특정 주문 업데이트를 구독할 수 있는지 검증)
@@ -338,7 +338,7 @@ export class OrderService {
     if (!canSeeOrder) {
       return {
         ok: false,
-        error: "Unauthorized access to the order updates",
+        error: "접근할 권한이 없습니다.",
       };
     }
 
@@ -353,17 +353,16 @@ export class OrderService {
   ): Promise<TakeOrderOutput> {
     try {
       const order = await this.orders.findOne({ where: { id: orderId } });
-      console.log("📢 [order.service.ts:356]", order);
       if (!order) {
         return {
           ok: false,
-          error: "Order not found",
+          error: "주문을 찾을 수 없습니다.",
         };
       }
       if (order.driver) {
         return {
           ok: false,
-          error: "This order already has a driver",
+          error: "이미 배달원이 있습니다",
         };
       }
       await this.orders.save({
@@ -379,7 +378,7 @@ export class OrderService {
     } catch {
       return {
         ok: false,
-        error: "Could not upate order.",
+        error: "주문을 업데이트할 수 없습니다.",
       };
     }
   }

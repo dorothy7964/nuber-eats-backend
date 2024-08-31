@@ -31,7 +31,7 @@ export class UserService {
       if (email) {
         const existingUser = await this.user.findOne({ where: { email } });
         if (existingUser && existingUser.id !== userId) {
-          return { ok: false, error: "Email is already in use." };
+          return { ok: false, error: "이메일은 이미 사용 중입니다." };
         }
 
         user.email = email;
@@ -55,7 +55,7 @@ export class UserService {
         ok: true,
       };
     } catch (error) {
-      return { ok: false, error: "Could not update profile." };
+      return { ok: false, error: "프로필을 업데이트할 수 없습니다." };
     }
   }
 
@@ -67,7 +67,10 @@ export class UserService {
     try {
       const exists = await this.user.findOne({ where: { email } });
       if (exists) {
-        return { ok: false, error: "There is a user with that email already" };
+        return {
+          ok: false,
+          error: "이미 해당 이메일을 가진 사용자가 있습니다.",
+        };
       }
       // 작성한 이메일이 존재하지 않는다면 작성한 계정 저장하기
       const user = await this.user.save(
@@ -81,7 +84,7 @@ export class UserService {
       this.mailService.sendVerificationEmail(user.email, verification.code);
       return { ok: true };
     } catch (e) {
-      return { ok: false, error: "Couldn`t create account" };
+      return { ok: false, error: "계정을 생성할 수 없습니다." };
     }
   }
 
@@ -94,7 +97,7 @@ export class UserService {
       if (!user) {
         return {
           ok: false,
-          error: "User not found",
+          error: "사용자를 찾을 수 없습니다.",
         };
       }
 
@@ -102,7 +105,7 @@ export class UserService {
       if (!passwordCorrect) {
         return {
           ok: false,
-          error: "Wrong password",
+          error: "암호가 잘못되었습니다.",
         };
       }
       const token = this.jwtService.sign(user.id);
@@ -111,7 +114,7 @@ export class UserService {
         token,
       };
     } catch (error) {
-      return { ok: false, error: "Can't log user in." };
+      return { ok: false, error: "사용자를 로그인 할 수 없습니다." };
     }
   }
 
@@ -123,7 +126,7 @@ export class UserService {
         user,
       };
     } catch (error) {
-      return { ok: false, error: "User Not Found" };
+      return { ok: false, error: "사용자를 찾을 수 없습니다." };
     }
   }
 
@@ -139,9 +142,9 @@ export class UserService {
         await this.verification.delete(verification.id);
         return { ok: true };
       }
-      return { ok: false, error: "Verification not found." };
+      return { ok: false, error: "확인 할 수 없습니다." };
     } catch (error) {
-      return { ok: false, error: "Could not verify email." };
+      return { ok: false, error: "이메일을 확인할 수 없습니다." };
     }
   }
 }

@@ -81,7 +81,7 @@ describe("UserModule (e2e)", () => {
         .expect((res) => {
           const { ok, error } = res.body.data.createAccount;
           expect(ok).toBe(false);
-          expect(error).toBe("There is a user with that email already");
+          expect(error).toBe("이미 해당 이메일을 가진 사용자가 있습니다.");
         });
     });
   });
@@ -110,7 +110,7 @@ describe("UserModule (e2e)", () => {
         .expect((res) => {
           const { ok, error, token } = res.body.data.login;
           expect(ok).toBe(false);
-          expect(error).toBe("Wrong password");
+          expect(error).toBe("암호가 잘못되었습니다.");
           expect(token).toBe(null);
         });
     });
@@ -145,7 +145,7 @@ describe("UserModule (e2e)", () => {
         .expect((res) => {
           const { ok, error, user } = res.body.data.userProfile;
           expect(ok).toBe(false);
-          expect(error).toBe("User Not Found");
+          expect(error).toBe("사용자를 찾을 수 없습니다.");
           expect(user).toBe(null);
         });
     });
@@ -229,7 +229,7 @@ describe("UserModule (e2e)", () => {
         .expect((res) => {
           const { ok, error } = res.body.data.verifyEmail;
           expect(ok).toBe(false);
-          expect(error).toBe("Verification not found.");
+          expect(error).toBe("확인 할 수 없습니다.");
         });
     });
   });
