@@ -62,7 +62,7 @@ seconds (optional)
 
 # Playground
 
-http://localhost:3000/graphql
+http://localhost:4000/graphql
 
 <br/><br/>
 
