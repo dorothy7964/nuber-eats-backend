@@ -19,7 +19,15 @@ export enum UserRole {
   Delivery = "Delivery",
 }
 
-registerEnumType(UserRole, { name: "UserRole" });
+registerEnumType(UserRole, {
+  name: "UserRole",
+  description: "유저 타입",
+  valuesMap: {
+    Client: { description: "고객" },
+    Owner: { description: "사장" },
+    Delivery: { description: "배달원" },
+  },
+});
 
 @InputType("UserInputType", { isAbstract: true })
 @ObjectType()
