@@ -2,6 +2,18 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
+# 기술스택
+
+- Node.js
+- Nest.js
+- GraphQL
+- TypeORM
+- PostgreSQL
+- jsonwebtoken
+- Jest(UnitTest), E2E
+
+  <br/><br/>
+
 # 실행
 
 ```javascript
@@ -147,6 +159,14 @@ Delivery
   - 만약 티셔츠 회사를 운영한다면 paddle를 사용할 수 없다.
 - 패들은 많은 백엔드가 필요하지 않는다. (프론트에 이미 많음)
   - 신용카드를 handle할 필요 없음 (신용카드의 verification, 번호, 보안)
+
+<br/><br/>
+
+# 🚨 Trouble Shooting
+
+- mailgun 비활성화 계정 이슈 (mail.service.ts)
+
+  - 메일건 계정이 비활성화 계정으로 되어있다. (유료화)
 
 <br/><br/>
 
