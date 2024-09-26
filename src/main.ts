@@ -12,7 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: corsOrigin, // 허용할 출처
     methods: "GET,POST,PUT,DELETE", // 허용할 HTTP 메서드
-    allowedHeaders: "Content-Type, Accept", // 허용할 헤더
+    allowedHeaders: "Content-Type, Accept, X-Jwt", // 허용할 헤더
   });
   await app.listen(4000);
 }
