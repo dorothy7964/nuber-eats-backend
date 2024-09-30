@@ -76,6 +76,9 @@ export class UserService {
       const user = await this.user.save(
         this.user.create({ email, password, role }),
       );
+
+      // verification의 code 생성은 @BeforeInsert()으로 랜덤 코드 생성 됨
+      // verification.entity.ts
       const verification = await this.verification.save(
         this.verification.create({ user }),
       );
