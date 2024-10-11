@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Raw, Repository } from "typeorm";
 import { Restaurant } from "../entities/restaurant.entity";
 
-export const DEFAULT_PAGE_LIMIT: number = 25;
+export const DEFAULT_PAGE_LIMIT: number = 6;
 
 @Injectable()
 export class RestaurantRepository {
