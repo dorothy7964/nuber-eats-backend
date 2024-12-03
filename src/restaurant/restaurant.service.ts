@@ -142,6 +142,13 @@ export class RestaurantService {
           error: "레스토랑을 찾을 수 없습니다.",
         };
       }
+      const isNotAuthorizedOwner = owner.id !== restaurant.ownerId;
+      if (isNotAuthorizedOwner) {
+        return {
+          ok: false,
+          error: "사장님이 관리하지 않는 레스토랑은 수정할 수 없습니다",
+        };
+      }
       let category: Category = null;
       const isEditCategoryName = editRestaurantInput.categoryName;
       if (isEditCategoryName) {
@@ -149,7 +156,6 @@ export class RestaurantService {
           editRestaurantInput.categoryName,
         );
       }
-
       await this.restaurants.save([
         {
           id: editRestaurantInput.restaurantId,
@@ -180,15 +186,13 @@ export class RestaurantService {
           error: "레스토랑을 찾을 수 없습니다.",
         };
       }
-
       const isNotAuthorizedOwner = owner.id !== restaurant.ownerId;
       if (isNotAuthorizedOwner) {
         return {
           ok: false,
-          error: "소유하지 않은 레스토랑을 삭제할 수 없습니다.",
+          error: "사장님이 관리하지 않는 레스토랑을 삭제할 수 없습니다.",
         };
       }
-
       await this.restaurants.delete(restaurantId);
       return { ok: true };
     } catch {
@@ -235,10 +239,8 @@ export class RestaurantService {
           error: "카테고리를 찾을 수 없습니다.",
         };
       }
-
       const [restaurants, totalResults] =
         await this.restaurantRepository.findByCategory(category.id, page);
-
       return {
         ok: true,
         restaurants,
@@ -261,7 +263,6 @@ export class RestaurantService {
           page,
           DEFAULT_PAGE_LIMIT,
         );
-
       return {
         ok: true,
         results: restaurants,
@@ -309,7 +310,6 @@ export class RestaurantService {
     try {
       const [restaurants, totalResults] =
         await this.restaurantRepository.searchByName(query, page);
-
       return {
         ok: true,
         restaurants,
@@ -333,6 +333,14 @@ export class RestaurantService {
         return {
           ok: false,
           error: "레스토랑을 찾을 수 없습니다.",
+        };
+      }
+      const isNotAuthorizedOwner = owner.id !== restaurant.ownerId;
+      if (isNotAuthorizedOwner) {
+        return {
+          ok: false,
+          error:
+            "사장님이 관리하지 않는 레스토랑에서 요리를 추가할 수 없습니다.",
         };
       }
       await this.dishes.save(
@@ -365,6 +373,14 @@ export class RestaurantService {
           error: "요리를 찾을 수 없습니다.",
         };
       }
+      const isNotAuthorizedOwner = owner.id !== dish.restaurant.ownerId;
+      if (isNotAuthorizedOwner) {
+        return {
+          ok: false,
+          error:
+            "사장님이 관리하지 않는 레스토랑에서 요리를 수정할 수 없습니다.",
+        };
+      }
       await this.dishes.save([
         {
           id: editDishInput.dishId,
@@ -395,6 +411,14 @@ export class RestaurantService {
         return {
           ok: false,
           error: "요리를 찾을 수 없습니다.",
+        };
+      }
+      const isNotAuthorizedOwner = owner.id !== dish.restaurant.ownerId;
+      if (isNotAuthorizedOwner) {
+        return {
+          ok: false,
+          error:
+            "사장님이 관리하지 않는 레스토랑에서 요리를 삭제할 수 없습니다.",
         };
       }
       await this.dishes.delete(dishId);
