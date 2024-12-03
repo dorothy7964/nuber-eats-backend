@@ -1,38 +1,39 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/user/entities/user.entity";
-import { Raw, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { AllCategoriesOutput } from "./dtos/all-categories.dto";
+import { CategoryInput, CategoryOutput } from "./dtos/category.dto";
+import { CreateDishInput, CreateDishOutput } from "./dtos/create-dish.dto";
 import {
   CreateRestaurantInput,
   CreateRestaurantOutput,
 } from "./dtos/create-restaurant.dto";
+import { DeleteDishInput, DeleteDishOutput } from "./dtos/delete-dish.dto";
 import {
   DeleteRestaurantInput,
   DeleteRestaurantOutput,
 } from "./dtos/delete-restaurant.dto";
+import { EditDishInput, EditDishOutput } from "./dtos/edit-dish.dto";
 import {
   EditRestaurantInput,
   EditRestaurantOutput,
 } from "./dtos/edit-restaurant.dto";
-import { Category } from "./entities/category.entity";
-import { Restaurant } from "./entities/restaurant.entity";
-import { CategoryRepository } from "./repositories/category.repository";
-import { CategoryInput, CategoryOutput } from "./dtos/category.dto";
-import { RestaurantsInput, RestaurantsOutput } from "./dtos/restaurants.dto";
 import { RestaurantInput, RestaurantOutput } from "./dtos/restaurant.dto";
+import { RestaurantsInput, RestaurantsOutput } from "./dtos/restaurants.dto";
 import {
   SearchRestaurantInput,
   SearchRestaurantOutput,
 } from "./dtos/search-restaurant.dto";
+import { Category } from "./entities/category.entity";
+import { Dish } from "./entities/dish.entity";
+import { Restaurant } from "./entities/restaurant.entity";
+import { CategoryRepository } from "./repositories/category.repository";
 import {
   DEFAULT_PAGE_LIMIT,
   RestaurantRepository,
 } from "./repositories/restaurant.repository";
-import { CreateDishInput, CreateDishOutput } from "./dtos/create-dish.dto";
-import { Dish } from "./entities/dish.entity";
-import { EditDishInput, EditDishOutput } from "./dtos/edit-dish.dto";
-import { DeleteDishInput, DeleteDishOutput } from "./dtos/delete-dish.dto";
+import { MyRestaurantsOutput } from "./dtos/my-restaurants.dto";
 
 @Injectable()
 export class RestaurantService {
@@ -75,6 +76,23 @@ export class RestaurantService {
       return {
         ok: false,
         error: "레스토랑을 만들 수 없습니다.",
+      };
+    }
+  }
+
+  async myRestaurants(owner: User): Promise<MyRestaurantsOutput> {
+    try {
+      const restaurants = await this.restaurants.find({
+        where: { owner: { id: owner.id } },
+      });
+      return {
+        ok: true,
+        restaurants,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: "레스토랑을 찾을 수 없습니다.",
       };
     }
   }
