@@ -34,6 +34,10 @@ import {
   RestaurantRepository,
 } from "./repositories/restaurant.repository";
 import { MyRestaurantsOutput } from "./dtos/my-restaurants.dto";
+import {
+  MyRestaurantInput,
+  MyRestaurantOutput,
+} from "./dtos/my-restaurant.dto";
 
 @Injectable()
 export class RestaurantService {
@@ -88,6 +92,33 @@ export class RestaurantService {
       return {
         ok: true,
         restaurants,
+      };
+    } catch {
+      return {
+        ok: false,
+        error: "레스토랑을 찾을 수 없습니다.",
+      };
+    }
+  }
+
+  async myRestaurant(
+    owner: User,
+    { id: restaurantId }: MyRestaurantInput,
+  ): Promise<MyRestaurantOutput> {
+    try {
+      const restaurant = await this.restaurants.findOne({
+        where: { owner: { id: owner.id }, id: restaurantId },
+        relations: ["menu", "orders"], // 관련된 데이터 로드
+      });
+      if (!restaurant) {
+        return {
+          ok: false,
+          error: "레스토랑을 찾을 수 없습니다.",
+        };
+      }
+      return {
+        ok: true,
+        restaurant,
       };
     } catch {
       return {
