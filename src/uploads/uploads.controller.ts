@@ -36,8 +36,7 @@ export class UploadsController {
           Key: objectName, // 파일의 이름
         })
         .promise();
-
-      return fileUrl;
+      return { url: fileUrl };
     } catch (e) {
       console.log("📢 [uploads.controller.ts:42]", e);
       return null;
