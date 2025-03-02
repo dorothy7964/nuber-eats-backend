@@ -1,27 +1,27 @@
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
+import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import * as Joi from "joi";
 import { AuthModule } from "./auth/auth.module";
+import { CommonModule } from "./common/common.module";
 import { JwtModule } from "./jwt/jwt.module";
 import { MailModule } from "./mail/mail.module";
 import { OrderItem, OrderItemOption } from "./order/entities/order-item.entity";
 import { Order } from "./order/entities/order.entity";
 import { OrderModule } from "./order/order.module";
+import { Payment } from "./payment/entities/payment.entity";
+import { PaymentModule } from "./payment/payment.module";
 import { Category } from "./restaurant/entities/category.entity";
 import { Dish } from "./restaurant/entities/dish.entity";
 import { Restaurant } from "./restaurant/entities/restaurant.entity";
 import { RestaurantModule } from "./restaurant/restaurant.module";
+import { UploadsModule } from "./uploads/uploads.module";
 import { User } from "./user/entities/user.entity";
 import { Verification } from "./user/entities/verification.entity";
 import { UserModule } from "./user/user.module";
-import { CommonModule } from "./common/common.module";
-import { PaymentModule } from "./payment/payment.module";
-import { Payment } from "./payment/entities/payment.entity";
-import { ScheduleModule } from "@nestjs/schedule";
-import { UploadsModule } from "./uploads/uploads.module";
 
 @Module({
   imports: [
@@ -43,6 +43,7 @@ import { UploadsModule } from "./uploads/uploads.module";
         MAILGUN_TO_EMAIL: Joi.string().required(),
         AWS_KEY: Joi.string().required(),
         AWS_SECRET: Joi.string().required(),
+        TOKEN_KEY: Joi.string(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -67,46 +68,50 @@ import { UploadsModule } from "./uploads/uploads.module";
         Payment,
       ],
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true, // 스키마 자동 생성
-      subscriptions: {
-        //🚨주의사항:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
-        // playground 대신 Altair Graphql 사용 할 것
-        "graphql-ws": {
-          onConnect: (context: any) => {
-            const { connectionParams, extra } = context;
-            console.log("📢 1. onConnect-extra 초기값", extra.token);
-            console.log("📢 1. onConnect-connectionParams", connectionParams);
+      imports: [ConfigModule], // ConfigModule을 imports에 추가해야 함
+      inject: [ConfigService], // ConfigService를 주입
+      useFactory: (configService: ConfigService) => {
+        const TOKEN_KEY = configService.get<string>("TOKEN_KEY"); // 기본값 설정
 
-            if (!connectionParams || !connectionParams["x-jwt"]) {
-              console.log("🚨 onConnect: connectionParams에 x-jwt가 없음!");
-            } else {
-              extra.token = connectionParams["x-jwt"];
-              console.log(
-                "✅ 1. onConnect-extra.token 설정 완료:",
-                extra.token,
-              );
-            }
+        return {
+          autoSchemaFile: true,
+          subscriptions: {
+            //🚨 주의사항:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
+            //🚨 playground 대신 Altair Graphql 사용 할 것
+            "graphql-ws": {
+              /* WebSocket 연결이 시작되면 onConnect가 실행 */
+              onConnect: (context: any) => {
+                const { connectionParams, extra } = context;
+                if (!connectionParams || !connectionParams[TOKEN_KEY]) {
+                  console.log(
+                    `🚨 onConnect: connectionParams에 ${TOKEN_KEY}가 없음!`,
+                  );
+                } else {
+                  // extra는 graphql-ws의 연결 정보(웹소켓 자체 정보)를 저장하는 공간이다.
+                  // graphql-ws에서는 connectionParams가 자동으로 context로 전달되지 않는다.
+                  // 대신, extra 객체를 이용하여 웹소켓 연결 정보를 유지할 수 있다.
+                  extra.token = connectionParams[TOKEN_KEY];
+                }
+              },
+            },
           },
-        },
-      },
-      context: ({ req, extra }) => {
-        console.log("📢 2. context 실행됨");
-        console.log(
-          "📢 2. context의 req.headers[x-jwt]:",
-          req?.headers?.["x-jwt"],
-        );
-        console.log("📢 2. context의 extra.token:", extra?.token);
+          /* Query, Mutation, Subscription 요청 시 context가 실행 */
+          context: ({ req, extra }) => {
+            const token = req?.headers?.[TOKEN_KEY] || extra?.token || null;
+            if (!token) {
+              console.log(
+                `🚨 context: ${TOKEN_KEY}가 없음! 인증 문제 발생 가능`,
+              );
+            } else {
+              console.log(`✅ context: ${TOKEN_KEY} 정상 설정됨: ${token}`);
+            }
 
-        const token = req?.headers?.["x-jwt"] || extra?.token || null;
-        if (!token) {
-          console.log("🚨 2. context: token이 없음! 인증 문제 발생 가능");
-        } else {
-          console.log("✅ 2. context: token 정상 설정됨:", token);
-        }
-
-        return { token };
+            return { token };
+          },
+        };
       },
     }),
     ScheduleModule.forRoot(),
