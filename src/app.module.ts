@@ -69,36 +69,45 @@ import { UploadsModule } from "./uploads/uploads.module";
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true,
+      autoSchemaFile: true, // 스키마 자동 생성
       subscriptions: {
-        // ! "graphql-ws" 사용을 권장
-        // "subscriptions-transport-ws" 오래된 웹소켓 프로토콜이다.
-        "subscriptions-transport-ws": {
-          onConnect: (connectionParams) => {
-            const TOKEN_KEY = "X-JWT";
-            return { token: connectionParams[TOKEN_KEY] };
+        //🚨주의사항:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
+        // playground 대신 Altair Graphql 사용 할 것
+        "graphql-ws": {
+          onConnect: (context: any) => {
+            const { connectionParams, extra } = context;
+            console.log("📢 1. onConnect-extra 초기값", extra.token);
+            console.log("📢 1. onConnect-connectionParams", connectionParams);
+
+            if (!connectionParams || !connectionParams["x-jwt"]) {
+              console.log("🚨 onConnect: connectionParams에 x-jwt가 없음!");
+            } else {
+              extra.token = connectionParams["x-jwt"];
+              console.log(
+                "✅ 1. onConnect-extra.token 설정 완료:",
+                extra.token,
+              );
+            }
           },
         },
       },
-      context: ({ req }) => {
-        const TOKEN_KEY = "x-jwt";
-        return { token: req.headers[TOKEN_KEY] };
+      context: ({ req, extra }) => {
+        console.log("📢 2. context 실행됨");
+        console.log(
+          "📢 2. context의 req.headers[x-jwt]:",
+          req?.headers?.["x-jwt"],
+        );
+        console.log("📢 2. context의 extra.token:", extra?.token);
+
+        const token = req?.headers?.["x-jwt"] || extra?.token || null;
+        if (!token) {
+          console.log("🚨 2. context: token이 없음! 인증 문제 발생 가능");
+        } else {
+          console.log("✅ 2. context: token 정상 설정됨:", token);
+        }
+
+        return { token };
       },
-      // "graphql-ws" context 파라미터가 오지 않음
-      // subscriptions: {
-      //   //🚨주의사항1:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
-      //   // playground 대신 Altair Graphql 사용할
-      //   "graphql-ws": {
-      //     onConnect: (context: any) => {
-      //       const { connectionParams, extra } = context;
-      //       extra.token = connectionParams["x-jwt"];
-      //     },
-      //   },
-      // },
-      // context: ({ req, extra }) => {
-      //   return { token: req ? req.headers["x-jwt"] : extra.token };
-      // },
-      // }),
     }),
     ScheduleModule.forRoot(),
     JwtModule.forRoot({

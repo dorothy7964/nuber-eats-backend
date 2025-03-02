@@ -85,7 +85,10 @@ http://localhost:4000/graphql
 - "subscriptions-transport-ws" 오래된 웹소켓 프로토콜이다.
 
 - "graphql-ws" 사용을 권장한다.
-  - 현재 파라미터가 전송이 안돼서 사용하고 있지 않음
+
+- playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안된다.
+
+- playground 대신 Altair Graphql 사용 할 것
 
 <br/><br/>
 
