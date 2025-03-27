@@ -14,6 +14,8 @@ async function bootstrap() {
     methods: "GET,POST,PUT,DELETE", // 허용할 HTTP 메서드
     allowedHeaders: "Content-Type, Accept, X-Jwt", // 허용할 헤더
   });
-  await app.listen(process.env.PORT || 4000);
+  const port = process.env.PORT || 4000;
+  await app.listen(port); // process.env.PORT = Render에서 제공하는 PORT 사용
+  console.log(`📢 [main.ts] Server is running on port ${port}`);
 }
 bootstrap();

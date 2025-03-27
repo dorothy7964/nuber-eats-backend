@@ -67,6 +67,9 @@ import { UserModule } from "./user/user.module";
         OrderItemOption,
         Payment,
       ],
+      ssl: {
+        rejectUnauthorized: false, // Render에서는 필수 설정
+      },
     }),
 
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
