@@ -14,6 +14,6 @@ async function bootstrap() {
     methods: "GET,POST,PUT,DELETE", // 허용할 HTTP 메서드
     allowedHeaders: "Content-Type, Accept, X-Jwt", // 허용할 헤더
   });
-  await app.listen(4000);
+  await app.listen(process.env.PORT || 4000);
 }
 bootstrap();
