@@ -63,19 +63,11 @@ export class OrderResolver {
     return this.ordersService.editOrder(user, editOrderInput);
   }
 
-  // @Mutation(() => Boolean)
-  // async ReadyTest(@Args("subId") subId: number) {
-  //   await this.pubSub.publish("orderTest", {
-  //     orderSubscription: subId,
-  //   });
-  //   return true;
-  // }
-
   @Mutation(() => Boolean)
-  async ReadyTest() {
+  async ReadyTest(@Args("subId") subId: number) {
     // publish의 palyload는 객체여야 한다.
     await this.pubSub.publish("orderTest", {
-      orderSubscription: "구독 테스트 중",
+      orderSubscription: subId,
     });
     return true;
   }

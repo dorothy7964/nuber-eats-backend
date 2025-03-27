@@ -1,5 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { PubSub } from "graphql-subscriptions";
+import {
+  NEW_COOKED_ORDER,
+  NEW_ORDER_UPDATE,
+  NEW_PENDING_ORDER,
+  PUB_SUB,
+} from "src/common/common.constants";
 import { Dish } from "src/restaurant/entities/dish.entity";
 import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 import { User, UserRole } from "src/user/entities/user.entity";
@@ -8,18 +15,10 @@ import { CreateOrderInput, CreateOrderOutput } from "./dtos/create-order.dto";
 import { EditOrderInput, EditOrderOutput } from "./dtos/edit-order.dto";
 import { GetOrderInput, GetOrderOutput } from "./dtos/get-order.dto";
 import { GetOrdersInput, GetOrdersOutput } from "./dtos/get-orders.dto";
-import { OrderItem } from "./entities/order-item.entity";
-import { Order, OrderStatus } from "./entities/order.entity";
-import { clearLine } from "readline";
-import {
-  NEW_COOKED_ORDER,
-  NEW_ORDER_UPDATE,
-  NEW_PENDING_ORDER,
-  PUB_SUB,
-} from "src/common/common.constants";
-import { PubSub } from "graphql-subscriptions";
 import { OrderUpdatesInput } from "./dtos/order-updates.dto";
 import { TakeOrderInput, TakeOrderOutput } from "./dtos/take-order.dto";
+import { OrderItem } from "./entities/order-item.entity";
+import { Order, OrderStatus } from "./entities/order.entity";
 
 @Injectable()
 export class OrderService {
