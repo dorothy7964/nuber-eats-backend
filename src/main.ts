@@ -17,5 +17,8 @@ async function bootstrap() {
   const port = process.env.PORT || 4000;
   await app.listen(port); // process.env.PORT = Render에서 제공하는 PORT 사용
   console.log(`📢 [main.ts] Server is running on port ${port}`);
+  console.log("✅ NODE_ENV:", process.env.NODE_ENV); // NODE_ENV 값 확인
+  console.log("✅ DATABASE_URL:", process.env.DATABASE_URL); // DATABASE_URL 값 확인
 }
+
 bootstrap();
