@@ -48,11 +48,15 @@ import { UserModule } from "./user/user.module";
     }),
     TypeOrmModule.forRoot({
       type: "postgres",
-      host: process.env.DB_HOST,
-      port: +process.env.DB_PORT, // port는 number 값이어야 한다. + 붙여주기
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
+      ...(process.env.DATABASE_URL
+        ? { url: process.env.DATABASE_URL }
+        : {
+            host: process.env.DB_HOST,
+            port: +process.env.DB_PORT, // port는 number 값이어야 한다. + 붙여주기
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DATABASE,
+          }),
       synchronize: process.env.NODE_ENV !== "prod",
       logging:
         process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
