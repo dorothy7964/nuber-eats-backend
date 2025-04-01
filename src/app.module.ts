@@ -83,6 +83,8 @@ import { UserModule } from "./user/user.module";
 
         return {
           autoSchemaFile: true,
+          playground: process.env.NODE_ENV !== "prod", // 🚨 prod일 때 비활성화
+          introspection: process.env.NODE_ENV !== "prod", // 🚨 prod일 때 스키마 탐색 비활성화
           subscriptions: {
             //🚨 주의사항:playground에서 graphql-ws를 지원하지 않음 따라서 subscription이 안됨
             //🚨 playground 대신 Altair Graphql 사용 할 것
