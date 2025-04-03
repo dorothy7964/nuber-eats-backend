@@ -19,7 +19,7 @@ async function bootstrap() {
   console.log(`📢 [main.ts] Server is running on port ${port}`);
   console.log("✅ NODE_ENV:", process.env.NODE_ENV); // NODE_ENV 값 확인
   console.log("✅ DATABASE_URL:", process.env.DATABASE_URL); // DATABASE_URL 값 확인
-  console.log("📢📢 자동 배포 테스트");
+  console.log("📢📢 자동 배포 테스트 2");
 }
 
 bootstrap();
