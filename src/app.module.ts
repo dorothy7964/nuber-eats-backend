@@ -89,6 +89,7 @@ import { UserModule } from "./user/user.module";
 
         return {
           autoSchemaFile: true,
+          cors: false, // Nest 전체에 cors 설정했으니 여기선 false!
           playground: process.env.NODE_ENV !== "prod", // 🚨 prod일 때 비활성화
           introspection: process.env.NODE_ENV !== "prod", // 🚨 prod일 때 스키마 탐색 비활성화
           subscriptions: {
