@@ -11,6 +11,7 @@ async function bootstrap() {
   const corsOrigin = configService.get<string>("CORS_ORIGIN")?.split(",");
   app.enableCors({
     origin: corsOrigin, // 허용할 출처
+    credentials: true, // 브라우저가 쿠키, 인증 헤더 등을 포함한 요청을 허용하도록 설정 (withCredentials: true와 함께 사용해야 함)
     methods: "GET,POST,PUT,DELETE", // 허용할 HTTP 메서드
     allowedHeaders: "Content-Type, Accept, X-Jwt", // 허용할 헤더
   });
