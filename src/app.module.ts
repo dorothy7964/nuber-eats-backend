@@ -57,7 +57,7 @@ import { UserModule } from "./user/user.module";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
           }),
-      synchronize: process.env.NODE_ENV !== "prod",
+      synchronize: process.env.NODE_ENV !== "prod", // 개발 중일 때만 true
       logging:
         process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
       entities: [
@@ -71,7 +71,13 @@ import { UserModule } from "./user/user.module";
         OrderItemOption,
         Payment,
       ],
-      ssl: false, // SSL 비활성화
+      ssl: process.env.NODE_ENV === "prod",
+      extra: {
+        ssl:
+          process.env.NODE_ENV === "prod"
+            ? { rejectUnauthorized: false }
+            : false,
+      },
     }),
 
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
