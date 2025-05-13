@@ -57,7 +57,7 @@ import { UserModule } from "./user/user.module";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
           }),
-      synchronize: process.env.NODE_ENV !== "prod", // 개발 중일 때만 true
+      synchronize: true,
       logging:
         process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
       entities: [
@@ -89,7 +89,7 @@ import { UserModule } from "./user/user.module";
 
         return {
           autoSchemaFile: true,
-          cors: false, // Nest 전체에 cors 설정했으니 여기선 false!
+          cors: false, // GraphQL에서 CORS는 직접 안 하고, main.ts에서 하도록 맡길
           playground: process.env.NODE_ENV !== "prod", // 🚨 prod일 때 비활성화
           introspection: process.env.NODE_ENV !== "prod", // 🚨 prod일 때 스키마 탐색 비활성화
           subscriptions: {
