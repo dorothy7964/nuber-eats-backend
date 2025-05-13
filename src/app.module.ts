@@ -57,7 +57,7 @@ import { UserModule } from "./user/user.module";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
           }),
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== "prod", // 개발 중일 때만 true
       logging:
         process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
       entities: [
