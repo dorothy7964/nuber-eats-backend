@@ -22,6 +22,7 @@ import { UploadsModule } from "./uploads/uploads.module";
 import { User } from "./user/entities/user.entity";
 import { Verification } from "./user/entities/verification.entity";
 import { UserModule } from "./user/user.module";
+import { SeedModule } from "./seed/seed.module";
 
 @Module({
   imports: [
@@ -146,6 +147,7 @@ import { UserModule } from "./user/user.module";
     CommonModule,
     PaymentModule,
     UploadsModule,
+    SeedModule,
   ],
 })
 export class AppModule {}
