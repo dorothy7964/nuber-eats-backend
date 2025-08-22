@@ -72,6 +72,8 @@ import { SeedModule } from "./seed/seed.module";
         OrderItemOption,
         Payment,
       ],
+      migrations: [__dirname + "/migrations/**/*{.ts,.js}"],
+      migrationsRun: true, // 앱 시작할 때 자동으로 migration 실행
       ssl: process.env.NODE_ENV === "prod",
       extra: {
         ssl:
