@@ -25,8 +25,9 @@ export class AddCategories1688200000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(
-      `DELETE FROM category WHERE slug IN ('chicken','dessert','hamburger','jjajangmyeon','pizza','sushi','tteokbokki')`,
-    );
+    /* 카테고리 마이그레이션 삭제 방지 전략 = down() 주석처리해 비워두기 */
+    // await queryRunner.query(
+    //   `DELETE FROM category WHERE slug IN ('chicken','dessert','hamburger','jjajangmyeon','pizza','sushi','tteokbokki')`,
+    // );
   }
 }
