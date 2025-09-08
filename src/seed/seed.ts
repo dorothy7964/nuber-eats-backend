@@ -8,8 +8,24 @@ async function bootstrap() {
   const seedModule = app.select(SeedModule);
   const seedService = seedModule.get(SeedService);
 
-  await seedService.run();
+  const arg = process.argv[2]; // 예: "users" or "categories"
+  console.log("📢📢📢 [ process.argv[2]]", process.argv[2]);
+  // console.log("📢📢📢 [ process.argv]", process);
+
+  if (arg === "users") {
+    await seedService.runUsers();
+  } else if (arg === "categories") {
+    await seedService.runCategories();
+  } else {
+    await seedService.runAll();
+  }
+
   await app.close();
+
+  // await seedService.runAll();
+  // await seedService.runUsers();
+  // await seedService.runCategories();
+  // await app.close();
 }
 
 bootstrap();

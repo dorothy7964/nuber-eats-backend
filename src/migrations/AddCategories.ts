@@ -1,24 +1,22 @@
+import { CATEGORIES } from "src/constants/categories";
 import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class AddCategories1688200000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
-    const categories = [
-      { name: "chicken", coverImg: "chicken.png", slug: "chicken" },
-      { name: "dessert", coverImg: "dessert.png", slug: "dessert" },
-      { name: "hamburger", coverImg: "hamburger.png", slug: "hamburger" },
-      {
-        name: "jjajangmyeon",
-        coverImg: "jjajangmyeon.png",
-        slug: "jjajangmyeon",
-      },
-      { name: "pizza", coverImg: "pizza.png", slug: "pizza" },
-      { name: "sushi", coverImg: "sushi.png", slug: "sushi" },
-      { name: "tteokbokki", coverImg: "tteokbokki.png", slug: "tteokbokki" },
-    ];
+    await queryRunner.query(`
+      CREATE TABLE IF NOT EXISTS "category" (
+        "id" SERIAL PRIMARY KEY,
+        "name" VARCHAR NOT NULL,
+        "coverImg" VARCHAR NOT NULL,
+        "slug" VARCHAR UNIQUE NOT NULL
+      );
+    `);
 
-    for (const cat of categories) {
+    for (const cat of CATEGORIES) {
       await queryRunner.query(
-        `INSERT INTO category(name, "coverImg", slug) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING`,
+        `INSERT INTO "category"(name, "coverImg", slug) 
+         VALUES ($1, $2, $3) 
+         ON CONFLICT (slug) DO NOTHING`,
         [cat.name, cat.coverImg, cat.slug],
       );
     }
