@@ -8,4 +8,5 @@ export const CATEGORIES = [
   { name: "pizza", coverImg: "pizza.png", slug: "pizza" },
   { name: "sushi", coverImg: "sushi.png", slug: "sushi" },
   { name: "tteokbokki", coverImg: "tteokbokki.png", slug: "tteokbokki" },
+  { name: "salad", coverImg: "salad.png", slug: "salad" },
 ];
