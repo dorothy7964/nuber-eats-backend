@@ -10,6 +10,7 @@ import { Verification } from "./entities/verification.entity";
 import { UserProfileOutput } from "./dtos/user-profile.dto";
 import { VerifyEmailOutput } from "./dtos/verify-email.dto";
 import { MailService } from "src/mail/mail.service";
+import { AllUsersOutput } from "./dtos/all-users.dto";
 
 @Injectable()
 export class UserService {
@@ -118,6 +119,21 @@ export class UserService {
       };
     } catch (error) {
       return { ok: false, error: "사용자를 로그인 할 수 없습니다." };
+    }
+  }
+
+  async findAll(): Promise<AllUsersOutput> {
+    try {
+      const users = await this.user.find();
+      return {
+        ok: true,
+        users,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error: "사용자 목록을 불러올 수 없습니다.",
+      };
     }
   }
 

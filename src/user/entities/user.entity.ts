@@ -17,6 +17,7 @@ export enum UserRole {
   Client = "Client",
   Owner = "Owner",
   Delivery = "Delivery",
+  Admin = "Admin",
 }
 
 registerEnumType(UserRole, {
@@ -26,6 +27,7 @@ registerEnumType(UserRole, {
     Client: { description: "고객" },
     Owner: { description: "사장" },
     Delivery: { description: "배달원" },
+    Admin: { description: "슈퍼 관리자" },
   },
 });
 

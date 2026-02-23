@@ -1,9 +1,15 @@
-import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
+import {
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { GqlExecutionContext } from "@nestjs/graphql";
 import { JwtService } from "src/jwt/jwt.service";
 import { UserService } from "src/user/user.service";
 import { AllowedRoles } from "./role.decorator";
+import { UserRole } from "src/user/entities/user.entity";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -48,8 +54,18 @@ export class AuthGuard implements CanActivate {
           return true;
         }
 
-        // 유저의 역할이 @Role에 포함되어 있는지 확인
-        return roles.includes(user.role);
+        // 🔥 슈퍼 관리자 권한
+        if (user.role === UserRole.Admin) {
+          return true;
+        }
+
+        // ❗ 권한 없음 → 메시지 반환
+        if (!roles.includes(user.role)) {
+          throw new ForbiddenException("관리자만 접근할 수 있는 기능입니다.");
+        }
+
+        // ✔ 권한 있음
+        return true;
       }
     } catch (e) {
       console.log(e);

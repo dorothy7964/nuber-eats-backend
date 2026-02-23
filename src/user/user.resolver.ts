@@ -11,6 +11,7 @@ import { UserProfileInput, UserProfileOutput } from "./dtos/user-profile.dto";
 import { VerifyEmailInput, VerifyEmailOutput } from "./dtos/verify-email.dto";
 import { User } from "./entities/user.entity";
 import { UserService } from "./user.service";
+import { AllUsersOutput } from "./dtos/all-users.dto";
 
 @Resolver(() => User)
 export class UserResolver {
@@ -27,6 +28,12 @@ export class UserResolver {
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
     return this.UserService.findById(userProfileInput.userId);
+  }
+
+  @Query(() => AllUsersOutput)
+  @Role(["Admin"]) // 🔥 관리자 전용 전체 유저 조회
+  allUsers(): Promise<AllUsersOutput> {
+    return this.UserService.findAll();
   }
 
   @Mutation(() => EditProfileOutput)
