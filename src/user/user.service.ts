@@ -14,6 +14,7 @@ import { AllUsersOutput } from "./dtos/all-users.dto";
 
 @Injectable()
 export class UserService {
+  userRepository: any;
   constructor(
     @InjectRepository(User) private readonly user: Repository<User>,
     @InjectRepository(Verification)
@@ -165,5 +166,12 @@ export class UserService {
     } catch (error) {
       return { ok: false, error: "이메일을 확인할 수 없습니다." };
     }
+  }
+  // 내부 로직 전용: 이메일로 사용자 조회 (seed용)
+  // DTO를 사용하지 않는 순수 DB 조회용
+  async findByEmail(email: string): Promise<User | null> {
+    return this.user.findOne({
+      where: { email },
+    });
   }
 }
