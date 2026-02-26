@@ -52,6 +52,11 @@ export class User extends CoreEntity {
 
   @Column({ default: false })
   @Field(() => Boolean)
+  @IsEnum(UserRole)
+  isSuperAdmin: boolean;
+
+  @Column({ default: false })
+  @Field(() => Boolean)
   @IsBoolean()
   verified: boolean;
 
