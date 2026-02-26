@@ -59,10 +59,11 @@ export class UserSeed {
     }
 
     // 관리자 생성
-    const adminResult = await this.userService.createAccount({
+    const adminResult = await this.userService.createAdmin({
       email: adminEmail,
       password: adminPassword,
       role: UserRole.Admin,
+      isSuperAdmin: true,
     });
 
     if (adminResult.ok) {

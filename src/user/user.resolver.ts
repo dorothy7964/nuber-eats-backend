@@ -12,6 +12,10 @@ import { VerifyEmailInput, VerifyEmailOutput } from "./dtos/verify-email.dto";
 import { User } from "./entities/user.entity";
 import { UserService } from "./user.service";
 import { AllUsersOutput } from "./dtos/all-users.dto";
+import {
+  CreateAdminInput,
+  CreateAdminOutput,
+} from "./dtos/admin-create-account.dto";
 
 @Resolver(() => User)
 export class UserResolver {
@@ -50,6 +54,14 @@ export class UserResolver {
     @Args("input") createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
     return this.UserService.createAccount(createAccountInput);
+  }
+
+  @Mutation(() => CreateAdminOutput)
+  @Role(["Admin"])
+  async createAdmin(
+    @Args("input") createAdminInput: CreateAdminInput,
+  ): Promise<CreateAdminOutput> {
+    return this.UserService.createAdmin(createAdminInput);
   }
 
   @Mutation(() => LoginOutput)
