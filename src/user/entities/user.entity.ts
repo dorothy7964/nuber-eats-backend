@@ -27,7 +27,7 @@ registerEnumType(UserRole, {
     Client: { description: "고객" },
     Owner: { description: "사장" },
     Delivery: { description: "배달원" },
-    Admin: { description: "슈퍼 관리자" },
+    Admin: { description: "관리자" },
   },
 });
 

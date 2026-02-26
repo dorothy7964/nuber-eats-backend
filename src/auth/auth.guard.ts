@@ -54,7 +54,7 @@ export class AuthGuard implements CanActivate {
           return true;
         }
 
-        // 🔥 슈퍼 관리자 권한
+        // 관리자 권한
         if (user.role === UserRole.Admin) {
           return true;
         }

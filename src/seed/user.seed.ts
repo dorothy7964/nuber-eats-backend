@@ -41,7 +41,7 @@ export class UserSeed {
       }
     }
 
-    // 🔥 슈퍼 관리자 생성
+    // 🔥 관리자 생성
     const adminEmail = this.configService.get<string>("ADMIN_USER_EMAIL");
     const adminPassword = this.configService.get<string>("ADMIN_USER_PASSWORD");
 
@@ -66,7 +66,7 @@ export class UserSeed {
     });
 
     if (adminResult.ok) {
-      console.log(`🔥 슈퍼 관리자 생성됨: ${adminEmail}`);
+      console.log(`🔥 관리자 생성됨: ${adminEmail}`);
     } else {
       console.log(`❌ 관리자 생성 실패: ${adminEmail} - ${adminResult.error}`);
     }
