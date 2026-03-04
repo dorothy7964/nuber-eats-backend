@@ -58,8 +58,7 @@ import { SeedModule } from "./seed/seed.module";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
           }),
-      // synchronize: process.env.NODE_ENV !== "prod", // 개발 중일 때만 true
-      synchronize: process.env.NODE_ENV === "prod", // synchronize 켜서 테이블 먼저 생성
+      synchronize: process.env.NODE_ENV !== "prod", // 개발 중일 때만 true
       logging:
         process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
       entities: [
@@ -74,7 +73,7 @@ import { SeedModule } from "./seed/seed.module";
         Payment,
       ],
       migrations: [__dirname + "/migrations/**/*{.ts,.js}"],
-      migrationsRun: false, // 앱 시작할 때 자동으로 migration 실행
+      migrationsRun: true, // 앱 시작할 때 자동으로 migration 실행
       ssl: process.env.NODE_ENV === "prod",
       extra: {
         ssl:
