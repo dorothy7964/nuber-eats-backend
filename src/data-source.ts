@@ -20,7 +20,8 @@ if (process.env.NODE_ENV !== "prod") {
 export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
-  synchronize: process.env.NODE_ENV !== "prod", // dev/test에서만 자동 동기화
+  // synchronize: process.env.NODE_ENV !== "prod", // dev/test에서만 자동 동기화
+  synchronize: process.env.NODE_ENV === "prod", // synchronize 켜서 테이블 먼저 생성
   logging: process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
   entities: [
     User,
