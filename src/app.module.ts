@@ -58,7 +58,8 @@ import { SeedModule } from "./seed/seed.module";
             password: process.env.DB_PASSWORD,
             database: process.env.DB_DATABASE,
           }),
-      synchronize: process.env.NODE_ENV !== "prod", // 개발 중일 때만 true
+      // synchronize: process.env.NODE_ENV !== "prod", // 개발 중일 때만 true
+      synchronize: process.env.NODE_ENV === "prod", // synchronize 켜서 테이블 먼저 생성
       logging:
         process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
       entities: [
