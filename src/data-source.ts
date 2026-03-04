@@ -19,11 +19,7 @@ if (process.env.NODE_ENV !== "prod") {
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: process.env.DB_HOST,
-  port: +process.env.DB_PORT,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
+  url: process.env.DATABASE_URL,
   synchronize: process.env.NODE_ENV !== "prod", // dev/test에서만 자동 동기화
   logging: process.env.NODE_ENV !== "prod" && process.env.NODE_ENV !== "test",
   entities: [
