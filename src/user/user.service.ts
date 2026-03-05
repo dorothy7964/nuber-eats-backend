@@ -1,20 +1,17 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "src/jwt/jwt.service";
+import { MailService } from "src/mail/mail.service";
 import { Repository } from "typeorm";
+import { CreateAdminOutput } from "./dtos/admin-create-account.dto";
+import { AllUsersOutput } from "./dtos/all-users.dto";
 import { CreateAccountInput } from "./dtos/create-account.dto";
-import { LoginInput, LoginOutput } from "./dtos/login.dto";
-import { User, UserRole } from "./entities/user.entity";
 import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
-import { Verification } from "./entities/verification.entity";
+import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { UserProfileOutput } from "./dtos/user-profile.dto";
 import { VerifyEmailOutput } from "./dtos/verify-email.dto";
-import { MailService } from "src/mail/mail.service";
-import { AllUsersOutput } from "./dtos/all-users.dto";
-import {
-  CreateAdminInput,
-  CreateAdminOutput,
-} from "./dtos/admin-create-account.dto";
+import { User, UserRole } from "./entities/user.entity";
+import { Verification } from "./entities/verification.entity";
 interface CreateUserParams {
   email: string;
   password: string;
@@ -106,7 +103,7 @@ export class UserService {
     return this.createUser({
       email: dto.email,
       password: dto.password,
-      role: UserRole.Client,
+      role: dto.role,
     });
   }
 
