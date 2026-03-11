@@ -12,6 +12,7 @@
     "seed": "cross-env NODE_ENV=dev ts-node -r tsconfig-paths/register src/seed/seed.ts",
     "seed:users": "yarn seed users",
     "seed:categories": "yarn seed categories",
+    "seed:restaurants": "yarn seed restaurants",
     "seed:all": "yarn seed",
     "start": "cross-env NODE_ENV=prod nest start",
     "start:dev": "cross-env NODE_ENV=dev nest start --watch",
@@ -31,6 +32,7 @@
   "dependencies": {
     "@apollo/server": "^4.10.2",
     "@aws-sdk/client-s3": "^3.1002.0",
+    "@faker-js/faker": "^7.6.0",
     "@nestjs/apollo": "^12.1.0",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.2.2",

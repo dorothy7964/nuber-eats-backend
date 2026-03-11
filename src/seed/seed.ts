@@ -17,6 +17,9 @@ async function bootstrap() {
     case "categories":
       await seedService.runCategories();
       break;
+    case "restaurants":
+      await seedService.runRestaurants();
+      break;
     default: // 전체 실행
       await seedService.runAll();
       break;

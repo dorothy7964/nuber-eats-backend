@@ -7,10 +7,18 @@ import { UserModule } from "src/user/user.module";
 import { CategorySeed } from "./category.seed";
 import { CategoryRepository } from "src/restaurant/repositories/category.repository";
 import { Category } from "src/restaurant/entities/category.entity";
+import { RestaurantSeed } from "./restaurant.seed";
+import { Restaurant } from "src/restaurant/entities/restaurant.entity";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Category]), UserModule],
-  providers: [CategorySeed, UserSeed, SeedService, CategoryRepository],
+  imports: [TypeOrmModule.forFeature([User, Category, Restaurant]), UserModule],
+  providers: [
+    UserSeed,
+    CategorySeed,
+    RestaurantSeed,
+    SeedService,
+    CategoryRepository,
+  ],
   exports: [SeedService],
 })
 export class SeedModule {}
