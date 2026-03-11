@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { UserSeed } from "./user.seed";
-import { CategorySeed } from "./category.seed";
-import { RestaurantSeed } from "./restaurant.seed";
+import { UserSeed } from "./seeds/user.seed";
+import { CategorySeed } from "./seeds/category.seed";
+import { RestaurantSeed } from "./seeds/restaurant.seed";
 
 @Injectable()
 export class SeedService {

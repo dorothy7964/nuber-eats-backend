@@ -32,8 +32,6 @@ export class RestaurantSeed {
       .andWhere("user.email LIKE :email", { email: "owner%@example.com" })
       .getMany();
 
-    console.log("📢 [restaurant.seed.ts:35] owners", owners);
-
     if (owners.length === 0) {
       console.log("❌ Owner 유저 없음");
       return;
